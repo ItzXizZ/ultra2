@@ -40,7 +40,24 @@ def create_app():
     # Ensure upload directory exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
-    # Serve React build files FIRST - before blueprints
+    # Serve static files from React build
+    @app.route('/static/<path:filename>')
+    def serve_static(filename):
+        build_path = os.path.join(app.root_path, '..', 'build', 'static')
+        return send_from_directory(build_path, filename)
+    
+    # Serve other static assets (favicon, manifest, etc.)
+    @app.route('/<path:filename>')
+    def serve_assets(filename):
+        build_path = os.path.join(app.root_path, '..', 'build')
+        # Only serve files that exist in the build directory
+        if os.path.exists(os.path.join(build_path, filename)):
+            return send_from_directory(build_path, filename)
+        # If file doesn't exist, let the catch-all route handle it
+        from werkzeug.exceptions import NotFound
+        raise NotFound()
+    
+    # Serve React build files - catch-all route for SPA
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve(path):
