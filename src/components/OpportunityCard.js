@@ -64,6 +64,22 @@ const SpotlightTag = styled(motion.div)`
   box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
 `;
 
+const UltraExclusiveTag = styled(motion.div)`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.95) 0%, rgba(75, 0, 130, 0.9) 100%);
+  color: #ffffff;
+  padding: 0.375rem 0.875rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+`;
+
 const CardHeader = styled.div`
   display: flex;
   justify-content: space-between;
@@ -99,12 +115,13 @@ const CardDescription = styled.p`
   line-height: 1.6;
   margin-bottom: 1.5rem;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: ${props => props.$expanded ? 'none' : '2'};
   -webkit-box-orient: vertical;
   overflow: hidden;
+  transition: all 0.3s ease;
 `;
 
-const ReadMoreLink = styled.span`
+const ExpandButton = styled.span`
   color: rgba(255, 215, 0, 0.9);
   cursor: pointer;
   font-weight: 500;
@@ -309,8 +326,12 @@ const OpportunityCard = ({
     stats,
     progress,
     tags = [],
-    imageUrl
+    imageUrl,
+    source
   } = opportunity;
+
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const isUltraExclusive = source === 'ultra';
 
 
 
@@ -319,6 +340,11 @@ const OpportunityCard = ({
     if (onSave) {
       onSave();
     }
+  };
+
+  const handleExpandClick = (e) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
   };
 
   return (
@@ -351,6 +377,15 @@ const OpportunityCard = ({
               ☆ SPOTLIGHT
             </SpotlightTag>
           )}
+          {isUltraExclusive && (
+            <UltraExclusiveTag
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: delay * 0.1 + 0.2 }}
+            >
+              ⭐ ULTRA EXCLUSIVE
+            </UltraExclusiveTag>
+          )}
         </CardImage>
 
         <CardHeader>
@@ -378,9 +413,13 @@ const OpportunityCard = ({
           </div>
         </CardHeader>
 
-        <CardDescription>
+        <CardDescription $expanded={isExpanded}>
           {description}
-          <ReadMoreLink> Read More</ReadMoreLink>
+          {description.length > 100 && (
+            <ExpandButton onClick={handleExpandClick}>
+              {isExpanded ? ' Show Less' : ' ...'}
+            </ExpandButton>
+          )}
         </CardDescription>
 
         {tags.length > 0 && (
