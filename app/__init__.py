@@ -111,9 +111,9 @@ def create_app():
                 email='admin@ultraportal.com',
                 role='admin'
             )
-            admin_user.set_password('UltraAdmin2024!')
+            admin_user.set_password('UltraAdmin2025!')
             db.session.add(admin_user)
             db.session.commit()
-            print("Default admin user created: username='admin', password='UltraAdmin2024!'")
+            print("Default admin user created: username='admin', password='UltraAdmin2025!'")
     
     return app 

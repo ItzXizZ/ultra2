@@ -36,14 +36,14 @@ def setup_database():
             email='admin@ultraportal.com',
             role='admin'
         )
-        admin_user.set_password('UltraAdmin2024!')
+        admin_user.set_password('UltraAdmin2025!')
         
         db.session.add(admin_user)
         db.session.commit()
         
         print("✅ Default admin user created successfully!")
         print("   Username: admin")
-        print("   Password: UltraAdmin2024!")
+        print("   Password: UltraAdmin2025!")
         print("   Email: admin@ultraportal.com")
         print("   ⚠️  Please change the password after first login!")
         
@@ -156,7 +156,7 @@ def setup_database():
         print("   1. Start the Flask backend: python run.py")
         print("   2. Start the React frontend: npm start")
         print("   3. Access the admin panel at: http://localhost:3000")
-        print("   4. Login with: admin / UltraAdmin2024!")
+        print("   4. Login with: admin / UltraAdmin2025!")
         print("   5. Change the default password immediately!")
 
 if __name__ == '__main__':
