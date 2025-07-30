@@ -309,6 +309,196 @@ const ProgressText = styled.div`
   font-weight: 500;
 `;
 
+// Overlay Modal Components
+const Overlay = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+`;
+
+const ModalContent = styled(motion.div)`
+  background: linear-gradient(135deg, rgba(30, 30, 30, 0.95) 0%, rgba(20, 20, 20, 0.98) 100%);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  z-index: 10;
+  
+  &:hover {
+    color: rgba(255, 255, 255, 1);
+    background: rgba(255, 255, 255, 0.1);
+  }
+`;
+
+const ModalImage = styled.div.attrs(props => ({
+  $imageUrl: props.imageUrl,
+  $hasImage: props.hasImage,
+}))`
+  width: 100%;
+  height: 300px;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  background: ${props => props.$hasImage ? `url(${props.$imageUrl})` : 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)'};
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: ${props => props.$hasImage ? 'linear-gradient(135deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%)' : 'rgba(0,0,0,0.3)'};
+  }
+`;
+
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 2rem;
+`;
+
+const ModalInfo = styled.div`
+  flex: 1;
+`;
+
+const ModalTitle = styled.h2`
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+`;
+
+const ModalCompany = styled.div`
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 1rem;
+  font-weight: 500;
+`;
+
+const ModalDescription = styled.p`
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+`;
+
+const ModalMeta = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+`;
+
+const MetaItem = styled.div`
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+`;
+
+const MetaLabel = styled.div`
+  font-size: 0.875rem;
+  color: rgba(255, 215, 0, 0.8);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const MetaValue = styled.div`
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+`;
+
+const ModalActions = styled.div`
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+`;
+
+const ModalActionButton = styled(motion.button)`
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: ${props => props.type === 'invest' 
+    ? 'rgba(255, 255, 255, 0.1)' 
+    : 'linear-gradient(135deg, rgba(255, 215, 0, 0.9) 0%, rgba(255, 165, 0, 0.8) 100%)'};
+  color: ${props => props.type === 'invest' ? '#FFFFFF' : '#000000'};
+  text-shadow: ${props => props.type === 'invest' 
+    ? '0 0 2px rgba(255, 215, 0, 0.3), 0 0 4px rgba(255, 215, 0, 0.2)' 
+    : 'none'};
+  border: ${props => props.type === 'invest' 
+    ? '1px solid rgba(255, 215, 0, 0.2)' 
+    : '1px solid rgba(255, 215, 0, 0.3)'};
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: ${props => props.type === 'invest' 
+    ? '0 4px 15px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)' 
+    : '0 4px 15px rgba(255, 215, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1)'};
+  
+  &:hover {
+    transform: translateY(-2px);
+    background: ${props => props.type === 'invest' 
+      ? 'rgba(255, 255, 255, 0.15)' 
+      : 'linear-gradient(135deg, rgba(255, 215, 0, 1) 0%, rgba(255, 165, 0, 0.9) 100%)'};
+    box-shadow: ${props => props.type === 'invest' 
+      ? '0 8px 25px rgba(255, 215, 0, 0.2), 0 0 15px rgba(255, 215, 0, 0.1)' 
+      : '0 8px 25px rgba(255, 215, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.15)'};
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
 const OpportunityCard = ({ 
   opportunity, 
   type = 'apply', 
@@ -331,6 +521,7 @@ const OpportunityCard = ({
   } = opportunity;
 
   const [isExpanded, setIsExpanded] = React.useState(false);
+  const [showModal, setShowModal] = React.useState(false);
   const isUltraExclusive = source === 'ultra';
 
 
@@ -347,19 +538,38 @@ const OpportunityCard = ({
     setIsExpanded(!isExpanded);
   };
 
+  const handleCardClick = (e) => {
+    e.stopPropagation();
+    setShowModal(true);
+  };
+
+  const handleModalClose = (e) => {
+    e.stopPropagation();
+    setShowModal(false);
+  };
+
+  const handleModalAction = (e) => {
+    e.stopPropagation();
+    if (onClick) {
+      onClick();
+    }
+    setShowModal(false);
+  };
+
   return (
-    <GlassCard
-      glassType="strong"
-      glowColor={type === 'invest' ? 'rgba(255, 215, 0, 0.3)' : 'rgba(0, 122, 255, 0.3)'}
-      onClick={onClick}
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.6,
-        delay: delay * 0.1,
-        ease: "easeOut"
-      }}
-    >
+    <>
+      <GlassCard
+        glassType="strong"
+        glowColor={type === 'invest' ? 'rgba(255, 215, 0, 0.3)' : 'rgba(0, 122, 255, 0.3)'}
+        onClick={handleCardClick}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: 0.6,
+          delay: delay * 0.1,
+          ease: "easeOut"
+        }}
+      >
       <CardContent>
         <CardImage imageUrl={imageUrl} hasImage={!!imageUrl}>
           {!imageUrl && (
@@ -464,6 +674,126 @@ const OpportunityCard = ({
         </CardActions>
       </CardContent>
     </GlassCard>
+
+    {/* Modal Overlay */}
+    {showModal && (
+      <Overlay
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={handleModalClose}
+      >
+        <ModalContent
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.8, opacity: 0 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <CloseButton onClick={handleModalClose}>
+            <i className="fas fa-times"></i>
+          </CloseButton>
+
+          <ModalImage imageUrl={imageUrl} hasImage={!!imageUrl}>
+            {!imageUrl && (
+              <NoImageText>
+                <i className="fas fa-image" style={{ fontSize: '3rem', marginBottom: '1rem', display: 'block' }}></i>
+                NO IMAGE PROVIDED
+              </NoImageText>
+            )}
+            {isUltraExclusive && (
+              <UltraExclusiveTag
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                ⭐ ULTRA EXCLUSIVE
+              </UltraExclusiveTag>
+            )}
+            {type === 'invest' && progress && progress > 70 && (
+              <SpotlightTag
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                ☆ SPOTLIGHT
+              </SpotlightTag>
+            )}
+          </ModalImage>
+
+          <ModalHeader>
+            <ModalInfo>
+              <ModalTitle>{title}</ModalTitle>
+              <ModalCompany>{company}</ModalCompany>
+              <Tag type={type}>
+                {type === 'invest' ? 'Investment Opportunity' : 'Job Opportunity'}
+              </Tag>
+            </ModalInfo>
+          </ModalHeader>
+
+          <ModalDescription>{description}</ModalDescription>
+
+          <ModalMeta>
+            <MetaItem>
+              <MetaLabel>Location</MetaLabel>
+              <MetaValue>📍 {location}</MetaValue>
+            </MetaItem>
+            <MetaItem>
+              <MetaLabel>Deadline</MetaLabel>
+              <MetaValue>⏰ {deadline}</MetaValue>
+            </MetaItem>
+            <MetaItem>
+              <MetaLabel>Compensation</MetaLabel>
+              <MetaValue>💰 {stats}</MetaValue>
+            </MetaItem>
+            {type === 'invest' && progress && (
+              <MetaItem>
+                <MetaLabel>Funding Progress</MetaLabel>
+                <MetaValue>{progress}% funded</MetaValue>
+              </MetaItem>
+            )}
+            {tags.length > 0 && (
+              <MetaItem>
+                <MetaLabel>Tags</MetaLabel>
+                <MetaValue>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    {tags.map((tag, index) => (
+                      <TagItem key={index}>{tag}</TagItem>
+                    ))}
+                  </div>
+                </MetaValue>
+              </MetaItem>
+            )}
+          </ModalMeta>
+
+          {type === 'invest' && progress && (
+            <>
+              <ProgressText>{progress}% funded</ProgressText>
+              <ProgressBar>
+                <ProgressFill
+                  type={type}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ delay: 0.4, duration: 1 }}
+                />
+              </ProgressBar>
+            </>
+          )}
+
+          <ModalActions>
+            <ModalActionButton
+              type={type}
+              onClick={handleModalAction}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <i className={`fas fa-${type === 'invest' ? 'chart-line' : 'paper-plane'}`}></i>
+              {type === 'invest' ? 'Invest Now' : 'Apply Now'}
+            </ModalActionButton>
+          </ModalActions>
+        </ModalContent>
+      </Overlay>
+    )}
+    </>
   );
 };
 
