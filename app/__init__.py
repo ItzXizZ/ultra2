@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_cors import CORS
@@ -14,7 +14,7 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='../build', static_url_path='')
     
     # Configuration
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
@@ -40,29 +40,12 @@ def create_app():
     # Ensure upload directory exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
-    # Serve static files from React build
-    @app.route('/static/<path:filename>')
-    def serve_static(filename):
-        build_path = os.path.join(app.root_path, '..', 'build', 'static')
-        return send_from_directory(build_path, filename)
-    
-    # Serve other static assets (favicon, manifest, etc.)
-    @app.route('/<path:filename>')
-    def serve_assets(filename):
-        build_path = os.path.join(app.root_path, '..', 'build')
-        # Only serve files that exist in the build directory
-        if os.path.exists(os.path.join(build_path, filename)):
-            return send_from_directory(build_path, filename)
-        # If file doesn't exist, let the catch-all route handle it
-        from werkzeug.exceptions import NotFound
-        raise NotFound()
-    
     # Serve React build files - catch-all route for SPA
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve(path):
         # Skip specific Flask routes
-        if path.startswith('api/') or path.startswith('admin') or path.startswith('login') or path.startswith('submit') or path.startswith('moderate') or path.startswith('opportunities') or path.startswith('uploads'):
+        if path.startswith('api/') or path.startswith('admin') or path.startswith('login') or path.startswith('submit') or path.startswith('moderate') or path.startswith('opportunities') or path.startswith('uploads') or path.startswith('static/'):
             from werkzeug.exceptions import NotFound
             raise NotFound()
         
