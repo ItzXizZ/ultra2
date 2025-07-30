@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_cors import CORS
@@ -45,6 +45,15 @@ def create_app():
     from .api_routes import api_bp
     app.register_blueprint(bp)
     app.register_blueprint(api_bp)
+    
+    # Serve React build files
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve(path):
+        if path != "" and os.path.exists(os.path.join(app.root_path, '..', 'build', path)):
+            return send_from_directory(os.path.join(app.root_path, '..', 'build'), path)
+        else:
+            return send_from_directory(os.path.join(app.root_path, '..', 'build'), 'index.html')
     
     # Initialize MongoDB connection
     try:
