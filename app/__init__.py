@@ -40,13 +40,7 @@ def create_app():
     # Ensure upload directory exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
-    # Register blueprints first
-    from .routes import bp
-    from .api_routes import api_bp
-    app.register_blueprint(bp)
-    app.register_blueprint(api_bp)
-    
-    # Serve React build files - simple catch-all route
+    # Serve React build files FIRST - before blueprints
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve(path):
@@ -61,6 +55,7 @@ def create_app():
         print(f"Path requested: {path}")
         print(f"Build path exists: {os.path.exists(build_path)}")
         
+        # Serve React build files
         try:
             if path != "" and os.path.exists(os.path.join(build_path, path)):
                 print(f"Serving file: {path}")
@@ -70,8 +65,28 @@ def create_app():
                 return send_from_directory(build_path, 'index.html')
         except Exception as e:
             print(f"Error serving React files: {e}")
-            # Fallback to index.html
-            return send_from_directory(build_path, 'index.html')
+            # Return a simple HTML response as fallback
+            return '''
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Ultra Portal</title>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+            </head>
+            <body>
+                <h1>Ultra Portal</h1>
+                <p>React app is loading...</p>
+                <p>If you see this message, there might be an issue with the build files.</p>
+            </body>
+            </html>
+            '''
+    
+    # Register blueprints AFTER React routes
+    from .routes import bp
+    from .api_routes import api_bp
+    app.register_blueprint(bp)
+    app.register_blueprint(api_bp)
     
     # Initialize MongoDB connection
     try:
