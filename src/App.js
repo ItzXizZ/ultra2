@@ -556,19 +556,28 @@ function App() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 0 && !glowDisabled) {
+      if (window.scrollY > 10 && !glowDisabled) {
         setGlowDisabled(true);
+        setShowGlow(false);
+      } else if (window.scrollY <= 10 && glowDisabled) {
+        setGlowDisabled(false);
+        // Don't flash the glow when scrolling back to top - only when using toggle/admin
       }
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, [glowDisabled]);
 
   // Fetch opportunities from API
-  const fetchOpportunities = async () => {
+  const fetchOpportunities = async (showLoading = false) => {
     try {
-      setLoading(true);
+      if (showLoading) {
+        setLoading(true);
+      }
       setError(null);
       
       // Fetch student opportunities (jobs, general, ultra)
@@ -587,7 +596,7 @@ function App() {
           tags: opp.skills ? opp.skills.split(',').map(s => s.trim()) : [],
           category: opp.type || 'General',
           type: opp.source === 'ultra' ? 'Ultra Exclusive' : opp.source === 'job' ? 'Job' : 'General',
-          imageUrl: opp.file_attachment ? `/uploads/${opp.file_attachment}` : null, // Use uploaded file if available
+          imageUrl: opp.file_attachment ? `${process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000'}/uploads/${opp.file_attachment}` : null, // Use uploaded file if available
           badge: opp.badge,
           priority: opp.priority,
           application_link: opp.application_link
@@ -613,7 +622,7 @@ function App() {
           tags: opp.skills ? opp.skills.split(',').map(s => s.trim()) : [],
           category: opp.type || 'Funding',
           type: opp.source === 'funding' ? 'Funding' : 'General',
-          imageUrl: opp.file_attachment ? `/uploads/${opp.file_attachment}` : null, // Use uploaded file if available
+          imageUrl: opp.file_attachment ? `${process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000'}/uploads/${opp.file_attachment}` : null, // Use uploaded file if available
           badge: opp.badge,
           priority: opp.priority,
           application_link: opp.application_link
@@ -628,17 +637,19 @@ function App() {
       setApplyOpportunities([]);
       setInvestOpportunities([]);
     } finally {
-      setLoading(false);
+      if (showLoading) {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchOpportunities();
+    fetchOpportunities(true); // Show loading only on initial load
     
-    // Set up automatic refresh every 30 seconds
+    // Set up automatic refresh every 15 seconds for more responsive updates
     const interval = setInterval(() => {
-      fetchOpportunities();
-    }, 30000); // 30 seconds
+      fetchOpportunities(false); // Silent refresh - no loading screen
+    }, 15000); // 15 seconds
     
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
@@ -651,9 +662,6 @@ function App() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <SectionIcon type="apply">
-          <i className="fas fa-briefcase"></i>
-        </SectionIcon>
         <SectionTitle>Opportunities</SectionTitle>
       </SectionHeader>
 
@@ -682,15 +690,7 @@ function App() {
           <i className="fas fa-bookmark"></i>
           {activeTab === 'all' ? 'Saved' : 'All'}
         </ActionButton>
-        <ActionButton 
-          onClick={fetchOpportunities}
-          whileHover={{ scale: 1.05 }} 
-          whileTap={{ scale: 0.95 }}
-          style={{ background: 'rgba(255, 255, 255, 0.1)' }}
-        >
-          <i className="fas fa-sync-alt"></i>
-          Refresh
-        </ActionButton>
+        {/* Auto-refresh enabled every 15 seconds - manual refresh button removed */}
       </ActionButtons>
 
       <PageContent>
@@ -700,13 +700,26 @@ function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             style={{ 
-              textAlign: 'center', 
-              padding: '2rem',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '200px',
               color: 'rgba(255, 255, 255, 0.8)'
             }}
           >
-            <i className="fas fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '1rem' }}></i>
-            <p>Loading opportunities...</p>
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              style={{ 
+                fontSize: '2rem', 
+                marginBottom: '1rem',
+                color: 'rgba(255, 215, 0, 0.8)'
+              }}
+            >
+              <i className="fas fa-spinner"></i>
+            </motion.div>
+            <p style={{ fontSize: '1rem', fontWeight: '500' }}>Loading opportunities...</p>
           </motion.div>
         )}
 
@@ -836,9 +849,6 @@ function App() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <SectionIcon type="invest">
-          <i className="fas fa-chart-line"></i>
-        </SectionIcon>
         <SectionTitle>Investment Opportunities</SectionTitle>
       </SectionHeader>
 
@@ -867,15 +877,7 @@ function App() {
           <i className="fas fa-bookmark"></i>
           {activeTab === 'all' ? 'Saved' : 'All'}
         </ActionButton>
-        <ActionButton 
-          onClick={fetchOpportunities}
-          whileHover={{ scale: 1.05 }} 
-          whileTap={{ scale: 0.95 }}
-          style={{ background: 'rgba(255, 255, 255, 0.1)' }}
-        >
-          <i className="fas fa-sync-alt"></i>
-          Refresh
-        </ActionButton>
+        {/* Auto-refresh enabled every 15 seconds - manual refresh button removed */}
       </ActionButtons>
 
       <PageContent>
@@ -885,13 +887,26 @@ function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             style={{ 
-              textAlign: 'center', 
-              padding: '2rem',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '200px',
               color: 'rgba(255, 255, 255, 0.8)'
             }}
           >
-            <i className="fas fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '1rem' }}></i>
-            <p>Loading investment opportunities...</p>
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              style={{ 
+                fontSize: '2rem', 
+                marginBottom: '1rem',
+                color: 'rgba(255, 215, 0, 0.8)'
+              }}
+            >
+              <i className="fas fa-spinner"></i>
+            </motion.div>
+            <p style={{ fontSize: '1rem', fontWeight: '500' }}>Loading investment opportunities...</p>
           </motion.div>
         )}
 
@@ -1045,6 +1060,45 @@ function App() {
         case 'funding':
           response = await apiService.submitFunding(formData);
           break;
+        case 'founder':
+          // Transform founder form data to match funding endpoint expectations
+          const transformedFormData = new FormData();
+          
+          // Map founder fields to funding endpoint fields
+          transformedFormData.append('title', formData.get('projectName') || '');
+          transformedFormData.append('description', formData.get('description') || '');
+          transformedFormData.append('company', formData.get('founderName') || '');
+          transformedFormData.append('submitter_name', formData.get('founderName') || '');
+          transformedFormData.append('submitter_email', formData.get('email') || '');
+          transformedFormData.append('submitter_phone', formData.get('phone') || '');
+          transformedFormData.append('funding_amount', formData.get('fundingGoal') || '');
+          transformedFormData.append('location', 'Remote'); // Default location
+          transformedFormData.append('application_deadline', 'No deadline');
+          
+          // Add additional founder-specific information to description
+          const founderDetails = [
+            `Problem: ${formData.get('problem') || 'N/A'}`,
+            `Solution: ${formData.get('solution') || 'N/A'}`,
+            `Market: ${formData.get('market') || 'N/A'}`,
+            `Team: ${formData.get('team') || 'N/A'}`,
+            `Equity Offered: ${formData.get('equity') || 'N/A'}`,
+            `Timeline: ${formData.get('timeline') || 'N/A'}`,
+            `Milestones: ${formData.get('milestones') || 'N/A'}`,
+            `Risks: ${formData.get('risks') || 'N/A'}`,
+            `Competitive Advantage: ${formData.get('competitiveAdvantage') || 'N/A'}`
+          ].join('\n\n');
+          
+          const fullDescription = `${formData.get('description') || ''}\n\n${founderDetails}`;
+          transformedFormData.set('description', fullDescription);
+          
+          // Handle file attachments (use the first image as file_attachment)
+          const imageFiles = formData.getAll('images[]');
+          if (imageFiles.length > 0) {
+            transformedFormData.append('file_attachment', imageFiles[0]);
+          }
+          
+          response = await apiService.submitFunding(transformedFormData);
+          break;
         case 'job':
           response = await apiService.submitJob(formData);
           break;
@@ -1107,7 +1161,13 @@ function App() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => setShowAdminPanel(true)}
+        onClick={() => {
+          setShowAdminPanel(true);
+          if (!glowDisabled) {
+            setShowGlow(true);
+            setTimeout(() => setShowGlow(false), 600);
+          }
+        }}
       >
         <i className="fas fa-shield-alt"></i>
         Admin

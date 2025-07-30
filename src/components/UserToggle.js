@@ -165,14 +165,19 @@ const UserToggle = ({ onToggle, initialValue = 0 }) => {
 
   React.useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 0) {
+      if (window.scrollY > 10) {
         setShowArrow(false);
+      } else if (window.scrollY <= 10) {
+        setShowArrow(true);
       }
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [showArrow]);
 
   return (
     <ToggleContainer>
