@@ -46,19 +46,31 @@ def create_app():
     app.register_blueprint(bp)
     app.register_blueprint(api_bp)
     
-    # Serve React build files - catch-all route for React app
+    # Serve React build files - simple catch-all route
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve(path):
-        # Skip API routes and admin routes
+        # Skip specific Flask routes
         if path.startswith('api/') or path.startswith('admin') or path.startswith('login') or path.startswith('submit') or path.startswith('moderate') or path.startswith('opportunities') or path.startswith('uploads'):
-            return None  # Let other routes handle these
+            from werkzeug.exceptions import NotFound
+            raise NotFound()
         
         # Serve React build files
         build_path = os.path.join(app.root_path, '..', 'build')
-        if path != "" and os.path.exists(os.path.join(build_path, path)):
-            return send_from_directory(build_path, path)
-        else:
+        print(f"Build path: {build_path}")
+        print(f"Path requested: {path}")
+        print(f"Build path exists: {os.path.exists(build_path)}")
+        
+        try:
+            if path != "" and os.path.exists(os.path.join(build_path, path)):
+                print(f"Serving file: {path}")
+                return send_from_directory(build_path, path)
+            else:
+                print(f"Serving index.html")
+                return send_from_directory(build_path, 'index.html')
+        except Exception as e:
+            print(f"Error serving React files: {e}")
+            # Fallback to index.html
             return send_from_directory(build_path, 'index.html')
     
     # Initialize MongoDB connection
