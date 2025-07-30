@@ -40,20 +40,26 @@ def create_app():
     # Ensure upload directory exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
-    # Register blueprints
+    # Register blueprints first
     from .routes import bp
     from .api_routes import api_bp
     app.register_blueprint(bp)
     app.register_blueprint(api_bp)
     
-    # Serve React build files
+    # Serve React build files - catch-all route for React app
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve(path):
-        if path != "" and os.path.exists(os.path.join(app.root_path, '..', 'build', path)):
-            return send_from_directory(os.path.join(app.root_path, '..', 'build'), path)
+        # Skip API routes and admin routes
+        if path.startswith('api/') or path.startswith('admin') or path.startswith('login') or path.startswith('submit') or path.startswith('moderate') or path.startswith('opportunities') or path.startswith('uploads'):
+            return None  # Let other routes handle these
+        
+        # Serve React build files
+        build_path = os.path.join(app.root_path, '..', 'build')
+        if path != "" and os.path.exists(os.path.join(build_path, path)):
+            return send_from_directory(build_path, path)
         else:
-            return send_from_directory(os.path.join(app.root_path, '..', 'build'), 'index.html')
+            return send_from_directory(build_path, 'index.html')
     
     # Initialize MongoDB connection
     try:

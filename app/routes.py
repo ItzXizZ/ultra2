@@ -18,38 +18,38 @@ def unauthorized():
     flash('Please log in to access this page.')
     return redirect(url_for('main.login'))
 
-# --- Home Page ---
-@bp.route('/')
-def home():
-    # Get approved opportunities for students (jobs, internships, general)
-    student_opportunities = OpportunitySubmission.query.filter(
-        OpportunitySubmission.status == 'approved',
-        OpportunitySubmission.source.in_(['job', 'general', 'ultra'])
-    ).order_by(OpportunitySubmission.priority.desc(), OpportunitySubmission.created_at.desc()).limit(6).all()
-    
-    # Get approved funding opportunities for investors
-    funding_opportunities = OpportunitySubmission.query.filter(
-        OpportunitySubmission.status == 'approved',
-        OpportunitySubmission.source == 'funding'
-    ).order_by(OpportunitySubmission.priority.desc(), OpportunitySubmission.created_at.desc()).limit(6).all()
-    
-    # Get statistics
-    total_opportunities = OpportunitySubmission.query.filter_by(status='approved').count()
-    total_students = OpportunitySubmission.query.filter(
-        OpportunitySubmission.status == 'approved',
-        OpportunitySubmission.source.in_(['job', 'general', 'ultra'])
-    ).count()
-    total_funding = OpportunitySubmission.query.filter(
-        OpportunitySubmission.status == 'approved',
-        OpportunitySubmission.source == 'funding'
-    ).count()
-    
-    return render_template('home.html', 
-                         student_opportunities=student_opportunities,
-                         funding_opportunities=funding_opportunities,
-                         total_opportunities=total_opportunities,
-                         total_students=total_students,
-                         total_funding=total_funding)
+# --- Home Page --- (Commented out to let React handle the root route)
+# @bp.route('/')
+# def home():
+#     # Get approved opportunities for students (jobs, internships, general)
+#     student_opportunities = OpportunitySubmission.query.filter(
+#         OpportunitySubmission.status == 'approved',
+#         OpportunitySubmission.source.in_(['job', 'general', 'ultra'])
+#     ).order_by(OpportunitySubmission.priority.desc(), OpportunitySubmission.created_at.desc()).limit(6).all()
+#     
+#     # Get approved funding opportunities for investors
+#     funding_opportunities = OpportunitySubmission.query.filter(
+#         OpportunitySubmission.status == 'approved',
+#         OpportunitySubmission.source == 'funding'
+#     ).order_by(OpportunitySubmission.priority.desc(), OpportunitySubmission.created_at.desc()).limit(6).all()
+#     
+#     # Get statistics
+#     total_opportunities = OpportunitySubmission.query.filter_by(status='approved').count()
+#     total_students = OpportunitySubmission.query.filter(
+#         OpportunitySubmission.status == 'approved',
+#         OpportunitySubmission.source.in_(['job', 'general', 'ultra'])
+#     ).count()
+#     total_funding = OpportunitySubmission.query.filter(
+#         OpportunitySubmission.status == 'approved',
+#         OpportunitySubmission.source == 'funding'
+#     ).count()
+#     
+#     return render_template('home.html', 
+#                          student_opportunities=student_opportunities,
+#                          funding_opportunities=funding_opportunities,
+#                          total_opportunities=total_opportunities,
+#                          total_students=total_students,
+#                          total_funding=total_funding)
 
 # --- Auth ---
 @bp.route('/login', methods=['GET', 'POST'])
