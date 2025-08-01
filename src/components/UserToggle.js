@@ -116,7 +116,7 @@ const ActiveIndicator = styled(motion.div)`
   }
 `;
 
-const UserToggle = ({ onToggle, initialValue = 0 }) => {
+const UserToggle = ({ onToggle, initialValue = 0, onToggleClick }) => {
   const [activeIndex, setActiveIndex] = useState(initialValue);
   const [showArrow, setShowArrow] = useState(true);
   const containerRef = useRef(null);
@@ -148,6 +148,10 @@ const UserToggle = ({ onToggle, initialValue = 0 }) => {
   const handleToggle = (index) => {
     setActiveIndex(index);
     onToggle(index);
+    // Trigger the glow animation if callback is provided
+    if (onToggleClick) {
+      onToggleClick();
+    }
   };
 
   const handleDragEnd = (event, info) => {
@@ -160,6 +164,10 @@ const UserToggle = ({ onToggle, initialValue = 0 }) => {
     if (clampedIndex !== activeIndex) {
       setActiveIndex(clampedIndex);
       if (onToggle) onToggle(clampedIndex);
+      // Trigger the glow animation if callback is provided
+      if (onToggleClick) {
+        onToggleClick();
+      }
     }
   };
 

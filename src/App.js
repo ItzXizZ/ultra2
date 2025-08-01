@@ -64,6 +64,35 @@ const FloatingAdminButton = styled(motion.button)`
   }
 `;
 
+const FloatingScrollToTopButton = styled(motion.button)`
+  position: fixed;
+  bottom: 2rem;
+  right: 2.5rem;
+  z-index: 1000;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-shadow: 0 0 3px rgba(255, 215, 0, 0.3), 0 0 6px rgba(255, 215, 0, 0.2);
+  height: 48px; /* Match admin button height */
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2), 0 0 15px rgba(255, 215, 0, 0.1);
+  }
+`;
+
 const HeroSection = styled.section`
   min-height: 100vh;
   position: relative;
@@ -81,16 +110,18 @@ const HeroContent = styled.div`
   z-index: 2;
 `;
 
-const HeroBackground = styled.div`
+const GlowEffect = styled(motion.div)`
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
   right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  height: 150px;
+  background: 
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 215, 0, 0.2) 30%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 30% 100%, rgba(255, 255, 255, 0.3) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 70% 100%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
   z-index: 1;
   pointer-events: none;
-  filter: blur(1px);
 `;
 
 const HeroTitle = styled(motion.h1)`
@@ -251,8 +282,8 @@ const ActionButton = styled(motion.button)`
   padding: 0.875rem 1.75rem;
   border: none;
   border-radius: 12px;
-  background: ${props => props.primary ? 'linear-gradient(135deg, rgba(255, 215, 0, 0.9) 0%, rgba(255, 165, 0, 0.8) 100%)' : 'rgba(255, 255, 255, 0.08)'};
-  color: ${props => props.primary ? '#000000' : '#FFFFFF'};
+  background: ${props => props.$primary ? 'linear-gradient(135deg, rgba(255, 215, 0, 0.9) 0%, rgba(255, 165, 0, 0.8) 100%)' : 'rgba(255, 255, 255, 0.08)'};
+  color: ${props => props.$primary ? '#000000' : '#FFFFFF'};
   font-weight: 600;
   font-size: 0.875rem;
   cursor: pointer;
@@ -262,17 +293,17 @@ const ActionButton = styled(motion.button)`
   transition: all 0.3s ease;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid ${props => props.primary ? 'rgba(255, 215, 0, 0.3)' : 'rgba(255, 255, 255, 0.15)'};
-  box-shadow: ${props => props.primary 
+  border: 1px solid ${props => props.$primary ? 'rgba(255, 215, 0, 0.3)' : 'rgba(255, 255, 255, 0.15)'};
+  box-shadow: ${props => props.$primary 
     ? '0 4px 15px rgba(255, 215, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1)' 
     : '0 4px 15px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)'};
   
   &:hover {
     transform: translateY(-2px);
-    background: ${props => props.primary 
+    background: ${props => props.$primary 
       ? 'linear-gradient(135deg, rgba(255, 215, 0, 1) 0%, rgba(255, 165, 0, 0.9) 100%)' 
       : 'rgba(255, 255, 255, 0.12)'};
-    box-shadow: ${props => props.primary 
+    box-shadow: ${props => props.$primary 
       ? '0 8px 25px rgba(255, 215, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.15)' 
       : '0 8px 25px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15)'};
   }
@@ -360,44 +391,106 @@ const CheckboxLabel = styled.label`
 `;
 
 function App() {
-  const [showGlow, setShowGlow] = useState(false);
-  const [glowDisabled, setGlowDisabled] = useState(false);
-  const [currentUserType, setCurrentUserType] = useState(0); // 0: Student, 1: Provider, 2: Investor, 3: Founder
+  const [currentUserType, setCurrentUserType] = useState(0);
+  const [showProviderForm, setShowProviderForm] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [applyOpportunities, setApplyOpportunities] = useState([]);
+  const [investOpportunities, setInvestOpportunities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState('all');
   const [filters, setFilters] = useState({
     category: 'All categories',
     type: 'All types',
     location: 'All locations',
-    minFunding: 0,
-    maxFunding: 100000,
     savedOnly: false
   });
   const [savedItems, setSavedItems] = useState({
     opportunities: [],
     projects: []
   });
-  const [activeTab, setActiveTab] = useState('all'); // 'all' or 'saved'
-  const [showAdminPanel, setShowAdminPanel] = useState(false);
-  const [showProviderForm, setShowProviderForm] = useState(false);
+  const [showGlow, setShowGlow] = useState(false);
+  const [glowDisabled, setGlowDisabled] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [isNearTop, setIsNearTop] = useState(true);
   
-  // Dynamic opportunities state
-  const [applyOpportunities, setApplyOpportunities] = useState([]);
-  const [investOpportunities, setInvestOpportunities] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  // Notification system
   const notifications = useNotifications();
 
   const handleToggle = (index) => {
     setCurrentUserType(index);
-    // Close admin panel when toggle is used
-    if (showAdminPanel) {
-      setShowAdminPanel(false);
+    // Reset form states when switching user types
+    setShowProviderForm(false);
+    setShowAdminPanel(false);
+  };
+
+  const scrollToContent = () => {
+    const startPosition = window.pageYOffset;
+    let targetPosition;
+    
+    if (isNearTop) {
+      // If near top, scroll to content area
+      const contentElement = document.querySelector('.content-area');
+      if (contentElement) {
+        targetPosition = contentElement.offsetTop - 100; // Offset for better positioning
+      } else {
+        // Fallback: scroll to a reasonable position
+        targetPosition = 200;
+      }
+    } else {
+      // If not near top, scroll to top
+      targetPosition = 0;
     }
-    if (!glowDisabled) {
-      setShowGlow(true);
-      setTimeout(() => setShowGlow(false), 600);
+    
+    // Custom smooth scrolling animation
+    const distance = targetPosition - startPosition;
+    const duration = 800; // 800ms for smooth animation
+    let start = null;
+    
+    const animateScroll = (currentTime) => {
+      if (start === null) start = currentTime;
+      const timeElapsed = currentTime - start;
+      const progress = Math.min(timeElapsed / duration, 1);
+      
+      // Easing function for smooth animation
+      const easeInOutCubic = progress => {
+        return progress < 0.5 
+          ? 4 * progress * progress * progress 
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+      };
+      
+      const easedProgress = easeInOutCubic(progress);
+      const currentPosition = startPosition + (distance * easedProgress);
+      
+      window.scrollTo(0, currentPosition);
+      
+      if (progress < 1) {
+        requestAnimationFrame(animateScroll);
+      }
+    };
+    
+    requestAnimationFrame(animateScroll);
+  };
+
+  const getButtonText = () => {
+    if (isNearTop) {
+      switch (currentUserType) {
+        case 0: return 'Opportunities';
+        case 1: return 'Submit Form';
+        case 2: return 'Investments';
+        case 3: return 'Founder Form';
+        default: return 'Content';
+      }
+    } else {
+      return 'Ultra Portal';
+    }
+  };
+
+  const getButtonIcon = () => {
+    if (isNearTop) {
+      return 'fas fa-arrow-down';
+    } else {
+      return 'fas fa-arrow-up';
     }
   };
 
@@ -485,10 +578,14 @@ function App() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10 && !glowDisabled) {
+      const currentScroll = window.scrollY;
+      setScrollPosition(currentScroll);
+      setIsNearTop(currentScroll < 100); // Adjust threshold as needed
+
+      if (currentScroll > 10 && !glowDisabled) {
         setGlowDisabled(true);
         setShowGlow(false);
-      } else if (window.scrollY <= 10 && glowDisabled) {
+      } else if (currentScroll <= 10 && glowDisabled) {
         setGlowDisabled(false);
         // Don't flash the glow when scrolling back to top - only when using toggle/admin
       }
@@ -509,33 +606,49 @@ function App() {
       }
       setError(null);
       
-      // Fetch student opportunities (jobs, general, ultra)
-      const studentResponse = await apiService.getOpportunities({ source: 'all' });
+      // Fetch student opportunities (jobs, general, ultra) - exclude founder submissions
+      const ultraResponse = await apiService.getOpportunities({ source: 'ultra' });
+      const generalResponse = await apiService.getOpportunities({ source: 'general' });
+      const jobResponse = await apiService.getOpportunities({ source: 'job' });
       
-      if (studentResponse.success && studentResponse.opportunities) {
-        // Transform API data to match the expected format
-        const transformedOpportunities = studentResponse.opportunities.map(opp => ({
-          id: opp.id,
-          title: opp.title,
-          company: opp.company || 'N/A',
-          description: opp.description,
-          location: opp.location || 'Remote',
-          deadline: opp.application_deadline || 'No deadline',
-          stats: opp.compensation || 'Contact for details',
-          tags: opp.skills ? opp.skills.split(',').map(s => s.trim()) : [],
-          category: opp.type || 'General',
-          type: opp.source === 'ultra' ? 'Ultra Exclusive' : opp.source === 'job' ? 'Job' : 'General',
-          imageUrl: opp.file_attachment ? `${process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000'}/uploads/${opp.file_attachment}` : null, // Use uploaded file if available
-          badge: opp.badge,
-          priority: opp.priority,
-          application_link: opp.application_link
-        }));
-        
-        setApplyOpportunities(transformedOpportunities);
+      // Combine all student opportunities
+      let allStudentOpportunities = [];
+      
+      if (ultraResponse.success && ultraResponse.opportunities) {
+        allStudentOpportunities = [...allStudentOpportunities, ...ultraResponse.opportunities];
       }
+      if (generalResponse.success && generalResponse.opportunities) {
+        allStudentOpportunities = [...allStudentOpportunities, ...generalResponse.opportunities];
+      }
+      if (jobResponse.success && jobResponse.opportunities) {
+        allStudentOpportunities = [...allStudentOpportunities, ...jobResponse.opportunities];
+      }
+      
+      // Transform API data to match the expected format
+      const transformedOpportunities = allStudentOpportunities.map(opp => ({
+        id: opp.id,
+        title: opp.title,
+        company: opp.company || 'N/A',
+        description: opp.description,
+        location: opp.location || 'Remote',
+        deadline: opp.application_deadline || 'No deadline',
+        stats: opp.compensation || 'Contact for details',
+        tags: opp.skills ? opp.skills.split(',').map(s => s.trim()) : [],
+        category: opp.type || 'General',
+        type: opp.source === 'ultra' ? 'Ultra Exclusive' : opp.source === 'job' ? 'Job' : 'General',
+        imageUrl: opp.file_attachment ? `${process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000'}/uploads/${opp.file_attachment}` : null, // Use uploaded file if available
+        badge: opp.badge,
+        priority: opp.priority,
+        application_link: opp.application_link
+      }));
+      
+      setApplyOpportunities(transformedOpportunities);
       
       // Fetch funding opportunities
       const fundingResponse = await apiService.getOpportunities({ source: 'funding' });
+      
+      // Fetch founder opportunities (investment opportunities)
+      const founderResponse = await apiService.getOpportunities({ source: 'founder' });
       
       if (fundingResponse.success && fundingResponse.opportunities) {
         // Transform API data to match the expected format
@@ -557,7 +670,28 @@ function App() {
           application_link: opp.application_link
         }));
         
-        setInvestOpportunities(transformedFunding);
+        // Transform founder opportunities
+        const transformedFounders = founderResponse.success && founderResponse.opportunities ? 
+          founderResponse.opportunities.map(opp => ({
+            id: opp.id,
+            title: opp.title,
+            company: `by ${opp.submitter_name || opp.company || 'Anonymous'}`,
+            description: opp.description,
+            location: opp.location || 'Remote',
+            deadline: opp.application_deadline || 'No deadline',
+            stats: opp.compensation || 'Contact for details',
+            progress: Math.floor(Math.random() * 40) + 60, // Random progress for demo
+            tags: opp.skills ? opp.skills.split(',').map(s => s.trim()) : [],
+            category: opp.type || 'Investment',
+            type: 'Investment',
+            imageUrl: opp.file_attachment ? `${process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000'}/uploads/${opp.file_attachment}` : null,
+            badge: opp.badge,
+            priority: opp.priority,
+            application_link: opp.application_link
+          })) : [];
+        
+        // Combine funding and founder opportunities for investor page
+        setInvestOpportunities([...transformedFunding, ...transformedFounders]);
       }
     } catch (err) {
       console.error('Error fetching opportunities:', err);
@@ -585,7 +719,7 @@ function App() {
   }, []);
 
   const renderStudentPage = () => (
-    <Content>
+    <Content className="content-area">
       <SectionHeader
         initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
@@ -607,7 +741,7 @@ function App() {
       </motion.p>
 
       <ActionButtons>
-        <ActionButton primary whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+        <ActionButton $primary whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <i className="fas fa-trophy"></i>
           Leaderboard
         </ActionButton>
@@ -772,7 +906,7 @@ function App() {
   );
 
   const renderInvestorPage = () => (
-    <Content>
+    <Content className="content-area">
       <SectionHeader
         initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
@@ -788,13 +922,13 @@ function App() {
         style={{ color: 'rgba(255, 255, 255, 0.8)', marginBottom: '2rem' }}
       >
         {activeTab === 'saved' 
-          ? `Viewing your saved projects. Displaying ${filteredProjects(investOpportunities).length} saved projects • Your bookmarked investments.`
+          ? `Viewing your saved projects. Displaying ${filteredProjects(investOpportunities).length} saved projects • Your bookmarked items.`
           : `Discover and invest in innovative student projects. Displaying ${filteredProjects(investOpportunities).length} projects • Support the next generation of innovators.`
         }
       </motion.p>
 
       <ActionButtons>
-        <ActionButton primary whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+        <ActionButton $primary whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <i className="fas fa-trophy"></i>
           Leaderboard
         </ActionButton>
@@ -990,10 +1124,10 @@ function App() {
           response = await apiService.submitFunding(formData);
           break;
         case 'founder':
-          // Transform founder form data to match funding endpoint expectations
+          // Transform founder form data to match founder endpoint expectations
           const transformedFormData = new FormData();
           
-          // Map founder fields to funding endpoint fields
+          // Map founder fields to founder endpoint fields
           transformedFormData.append('title', formData.get('projectName') || '');
           transformedFormData.append('description', formData.get('description') || '');
           transformedFormData.append('company', formData.get('founderName') || '');
@@ -1026,7 +1160,7 @@ function App() {
             transformedFormData.append('file_attachment', imageFiles[0]);
           }
           
-          response = await apiService.submitFunding(transformedFormData);
+          response = await apiService.submitFounder(transformedFormData);
           break;
         case 'job':
           response = await apiService.submitJob(formData);
@@ -1102,9 +1236,21 @@ function App() {
         Admin
       </FloatingAdminButton>
 
+      <FloatingScrollToTopButton
+        initial={{ y: 100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={scrollToContent}
+      >
+        <i className={getButtonIcon()}></i>
+        {getButtonText()}
+      </FloatingScrollToTopButton>
+
       <HeroSection>
         {showGlow && (
-          <HeroBackground
+          <GlowEffect
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ 
               opacity: [0, 1, 0.8, 0],
@@ -1129,6 +1275,12 @@ function App() {
           <UserToggle
             onToggle={handleToggle}
             initialValue={0}
+            onToggleClick={() => {
+              if (!glowDisabled) {
+                setShowGlow(true);
+                setTimeout(() => setShowGlow(false), 600);
+              }
+            }}
           />
         </HeroContent>
       </HeroSection>
@@ -1137,11 +1289,17 @@ function App() {
         {showAdminPanel ? (
           <AdminPanel key="admin" onClose={() => setShowAdminPanel(false)} />
         ) : showProviderForm ? (
-          <ProviderForm key="provider" onSubmit={handleFormSubmission} />
+          <div className="content-area">
+            <ProviderForm key="provider" onSubmit={handleFormSubmission} />
+          </div>
         ) : currentUserType === 1 ? (
-          <ProviderForm key="provider" onSubmit={handleFormSubmission} />
+          <div className="content-area">
+            <ProviderForm key="provider" onSubmit={handleFormSubmission} />
+          </div>
         ) : currentUserType === 3 ? (
-          <FounderForm key="founder" onSubmit={handleFormSubmission} />
+          <div className="content-area">
+            <FounderForm key="founder" onSubmit={handleFormSubmission} />
+          </div>
         ) : currentUserType === 2 ? (
           <motion.div
             key="investor"
