@@ -82,35 +82,16 @@ const HeroContent = styled.div`
   z-index: 2;
 `;
 
-const GlowEffect = styled(motion.div)`
+const HeroBackground = styled.div`
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
   right: 0;
-  height: 150px;
-  background: 
-    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 215, 0, 0.2) 30%, transparent 70%),
-    radial-gradient(ellipse 60% 40% at 30% 100%, rgba(255, 255, 255, 0.3) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 70% 100%, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+  bottom: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   z-index: 1;
   pointer-events: none;
   filter: blur(1px);
-`;
-
-const HeroBadge = styled(motion.div)`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 2rem;
 `;
 
 const HeroTitle = styled(motion.h1)`
@@ -130,62 +111,11 @@ const Content = styled.div`
   z-index: 2;
 `;
 
-const StatsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 5rem;
-`;
-
-const StatCard = styled(GlassCard)`
-  padding: 2rem;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.02) !important;
-  backdrop-filter: blur(15px) !important;
-  -webkit-backdrop-filter: blur(15px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
-`;
-
-const StatNumber = styled.div`
-  font-size: 3rem;
-  font-weight: 900;
-  color: #FFFFFF;
-  text-shadow: 0 0 5px rgba(255, 215, 0, 0.4), 0 0 10px rgba(255, 215, 0, 0.2);
-  margin-bottom: 0.5rem;
-`;
-
-const StatLabel = styled.div`
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 500;
-`;
-
 const SectionHeader = styled(motion.div)`
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 2rem;
-`;
-
-const SectionIcon = styled.div`
-  width: 3rem;
-  height: 3rem;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  background: ${props => props.type === 'invest' 
-    ? 'rgba(255, 255, 255, 0.1)' 
-    : 'linear-gradient(135deg, #007AFF 0%, #5856D6 100%)'};
-  color: ${props => props.type === 'invest' ? '#FFFFFF' : '#ffffff'};
-  text-shadow: ${props => props.type === 'invest' 
-    ? '0 0 3px rgba(255, 215, 0, 0.3), 0 0 6px rgba(255, 215, 0, 0.2)' 
-    : 'none'};
-  border: ${props => props.type === 'invest' 
-    ? '1px solid rgba(255, 215, 0, 0.2)' 
-    : 'none'};
 `;
 
 const SectionTitle = styled.h2`
@@ -1175,7 +1105,7 @@ function App() {
 
       <HeroSection>
         {showGlow && (
-          <GlowEffect
+          <HeroBackground
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ 
               opacity: [0, 1, 0.8, 0],

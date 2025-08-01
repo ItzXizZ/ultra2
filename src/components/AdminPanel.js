@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import apiService from '../services/api';
 import useNotifications from '../hooks/useNotifications';
 import NotificationContainer from './Notification';
@@ -36,16 +36,7 @@ const AdminPanel = ({ onClose }) => {
     const [editingSubmission, setEditingSubmission] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
 
-    useEffect(() => {
-        // Check if user is already logged in
-        const token = localStorage.getItem('adminToken');
-        if (token) {
-            setIsLoggedIn(true);
-            loadData();
-        }
-    }, []);
-
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         try {
             setLoading(true);
             const [submissionsData, statsData] = await Promise.all([
@@ -62,7 +53,16 @@ const AdminPanel = ({ onClose }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [filters]);
+
+    useEffect(() => {
+        // Check if user is already logged in
+        const token = localStorage.getItem('adminToken');
+        if (token) {
+            setIsLoggedIn(true);
+            loadData();
+        }
+    }, [loadData]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -226,7 +226,7 @@ const AdminPanel = ({ onClose }) => {
         if (isLoggedIn) {
             loadData();
         }
-    }, [filters]);
+    }, [isLoggedIn, loadData]);
 
     if (!isLoggedIn) {
         return (

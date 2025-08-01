@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { motion, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useMotionValue } from 'framer-motion';
 import styled from 'styled-components';
 
 const ToggleContainer = styled.div`
