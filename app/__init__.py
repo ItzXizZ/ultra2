@@ -19,9 +19,9 @@ def create_app():
     # Configuration
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     
-    # Database configuration - SQLite with persistent disk
-    # On Render, the instance folder is mounted to persistent disk
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///opportunities.db'
+    # Database configuration - SQLite for free tier
+    # Using /tmp for free tier (data persists during service lifetime)
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/opportunities.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
@@ -106,7 +106,7 @@ def create_app():
         try:
             db.create_all()
             print("Database tables created/verified successfully")
-            print("Using SQLite with persistent disk - data will survive restarts!")
+            print("Using SQLite in /tmp - data persists during service lifetime")
             
             # Create admin user if it doesn't exist
             from .models import User
