@@ -21,5 +21,4 @@ services:
   - type: pserv
     name: ultra-portal-db
     env: postgresql
-    plan: free
-    ipAllowList: [] 
+    plan: free 
