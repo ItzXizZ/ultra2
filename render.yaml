@@ -2,7 +2,7 @@ services:
   - type: web
     name: ultra-opportunity-portal
     env: python
-    plan: free
+    plan: starter
     buildCommand: |
       chmod +x build.sh
       ./build.sh
@@ -13,4 +13,8 @@ services:
       - key: NODE_VERSION
         value: 18.0.0
       - key: SECRET_KEY
-        generateValue: true 
+        generateValue: true
+    disk:
+      name: ultra-portal-data
+      mountPath: /opt/render/project/src/instance
+      sizeGB: 1 
