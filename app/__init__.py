@@ -5,7 +5,6 @@ from flask_cors import CORS
 from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
-import re
 
 # Load environment variables
 load_dotenv()
@@ -20,16 +19,9 @@ def create_app():
     # Configuration
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     
-    # Database configuration with PostgreSQL support
-    database_url = os.environ.get('DATABASE_URL')
-    if database_url:
-        # Handle Render's PostgreSQL URL format
-        if database_url.startswith('postgres://'):
-            database_url = database_url.replace('postgres://', 'postgresql://', 1)
-        app.config['SQLALCHEMY_DATABASE_URI'] = database_url
-    else:
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///opportunities.db'
-    
+    # Database configuration - SQLite with persistent disk
+    # On Render, the instance folder is mounted to persistent disk
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///opportunities.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
@@ -114,6 +106,7 @@ def create_app():
         try:
             db.create_all()
             print("Database tables created/verified successfully")
+            print("Using SQLite with persistent disk - data will survive restarts!")
             
             # Create admin user if it doesn't exist
             from .models import User

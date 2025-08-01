@@ -11,14 +11,9 @@ services:
         value: 3.11.0
       - key: NODE_VERSION
         value: 18.0.0
-      - key: DATABASE_URL
-        fromDatabase:
-          name: ultra-portal-db
-          property: connectionString
       - key: SECRET_KEY
         generateValue: true
-
-databases:
-  - name: ultra-portal-db
-    databaseName: ultra_portal
-    user: ultra_portal_user 
+    disk:
+      name: ultra-portal-data
+      mountPath: /opt/render/project/src/instance
+      sizeGB: 1 
