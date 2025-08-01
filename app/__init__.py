@@ -31,7 +31,13 @@ def create_app():
         print("Using local development database")
     
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
+    # Use persistent disk for uploads in production, local uploads in development
+    if os.environ.get('RENDER'):
+        # Production on Render - use persistent disk
+        app.config['UPLOAD_FOLDER'] = '/opt/render/project/src/instance/uploads'
+    else:
+        # Development - use local uploads folder
+        app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
     
     # MongoDB Configuration
@@ -50,6 +56,8 @@ def create_app():
     
     # Ensure upload directory exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    print(f"Upload folder configured: {app.config['UPLOAD_FOLDER']}")
+    print(f"Upload folder exists: {os.path.exists(app.config['UPLOAD_FOLDER'])}")
     
     # Serve React build files - catch-all route for SPA
     @app.route('/', defaults={'path': ''})
