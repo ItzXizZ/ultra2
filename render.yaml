@@ -18,7 +18,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
 
-  - type: pserv
-    name: ultra-portal-db
-    env: postgresql
-    plan: free 
+databases:
+  - name: ultra-portal-db
+    databaseName: ultra_portal
+    user: ultra_portal_user 
