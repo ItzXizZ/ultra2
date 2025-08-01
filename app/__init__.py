@@ -5,6 +5,7 @@ from flask_cors import CORS
 from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
+import re
 
 # Load environment variables
 load_dotenv()
@@ -18,7 +19,17 @@ def create_app():
     
     # Configuration
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') or 'sqlite:///opportunities.db'
+    
+    # Database configuration with PostgreSQL support
+    database_url = os.environ.get('DATABASE_URL')
+    if database_url:
+        # Handle Render's PostgreSQL URL format
+        if database_url.startswith('postgres://'):
+            database_url = database_url.replace('postgres://', 'postgresql://', 1)
+        app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///opportunities.db'
+    
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
@@ -100,20 +111,29 @@ def create_app():
     
     # Initialize database tables
     with app.app_context():
-        db.create_all()
-        
-        # Create admin user if it doesn't exist
-        from .models import User
-        admin_user = User.query.filter_by(username='admin').first()
-        if not admin_user:
-            admin_user = User(
-                username='admin',
-                email='admin@ultraportal.com',
-                role='admin'
-            )
-            admin_user.set_password('UltraAdmin2025!')
-            db.session.add(admin_user)
-            db.session.commit()
-            print("Default admin user created: username='admin', password='UltraAdmin2025!'")
+        try:
+            db.create_all()
+            print("Database tables created/verified successfully")
+            
+            # Create admin user if it doesn't exist
+            from .models import User
+            admin_user = User.query.filter_by(username='admin').first()
+            if not admin_user:
+                admin_user = User(
+                    username='admin',
+                    email='admin@ultraportal.com',
+                    role='admin'
+                )
+                admin_user.set_password('UltraAdmin2025!')
+                db.session.add(admin_user)
+                db.session.commit()
+                print("Default admin user created: username='admin', password='UltraAdmin2025!'")
+            else:
+                print("Admin user already exists")
+                
+        except Exception as e:
+            print(f"Database initialization error: {e}")
+            # Continue without database if there's an error
+            pass
     
     return app 
