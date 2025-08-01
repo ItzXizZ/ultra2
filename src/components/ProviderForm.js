@@ -49,66 +49,66 @@ const FormSubtitle = styled.p`
   line-height: 1.6;
 `;
 
-const ToggleContainer = styled.div`
-  display: flex;
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 20px;
-  padding: 0.5rem;
-  margin-bottom: 3rem;
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
-  position: relative;
-  box-shadow: 
-    0 4px 20px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-`;
+// const ToggleContainer = styled.div`
+//   display: flex;
+//   background: rgba(255, 255, 255, 0.06);
+//   backdrop-filter: blur(20px);
+//   -webkit-backdrop-filter: blur(20px);
+//   border: 1px solid rgba(255, 255, 255, 0.12);
+//   border-radius: 20px;
+//   padding: 0.5rem;
+//   margin-bottom: 3rem;
+//   max-width: 400px;
+//   margin-left: auto;
+//   margin-right: auto;
+//   position: relative;
+//   box-shadow: 
+//     0 4px 20px rgba(0, 0, 0, 0.15),
+//     inset 0 1px 0 rgba(255, 255, 255, 0.08);
+// `;
 
-const ToggleSlider = styled(motion.div)`
-  position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
-  width: calc(50% - 0.25rem);
-  height: calc(100% - 1rem);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
-  z-index: 1;
-  box-shadow: 
-    0 2px 10px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  transform: translateX(0);
-`;
+// const ToggleSlider = styled(motion.div)`
+//   position: absolute;
+//   top: 0.5rem;
+//   left: 0.5rem;
+//   width: calc(50% - 0.25rem);
+//   height: calc(100% - 1rem);
+//   background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
+//   backdrop-filter: blur(15px);
+//   -webkit-backdrop-filter: blur(15px);
+//   border: 1px solid rgba(255, 255, 255, 0.2);
+//   border-radius: 16px;
+//   z-index: 1;
+//   box-shadow: 
+//     0 2px 10px rgba(0, 0, 0, 0.1),
+//     inset 0 1px 0 rgba(255, 255, 255, 0.3);
+//   transform: translateX(0);
+// `;
 
-const ToggleOption = styled.button`
-  flex: 1;
-  padding: 1rem 1.5rem;
-  border: none;
-  border-radius: 16px;
-  background: transparent;
-  color: ${props => props.active ? '#FFFFFF' : 'rgba(255, 255, 255, 0.6)'};
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  z-index: 2;
-  outline: none;
-  
-  &:hover {
-    color: #FFFFFF;
-  }
-  
-  &:focus {
-    outline: none;
-    box-shadow: none;
-  }
-`;
+// const ToggleOption = styled.button`
+//   flex: 1;
+//   padding: 1rem 1.5rem;
+//   border: none;
+//   border-radius: 16px;
+//   background: transparent;
+//   color: ${props => props.active ? '#FFFFFF' : 'rgba(255, 255, 255, 0.6)'};
+//   font-weight: 600;
+//   font-size: 0.9rem;
+//   cursor: pointer;
+//   transition: all 0.3s ease;
+//   position: relative;
+//   z-index: 2;
+//   outline: none;
+//   
+//   &:hover {
+//     color: #FFFFFF;
+//   }
+//   
+//   &:focus {
+//     outline: none;
+//     box-shadow: none;
+//   }
+// `;
 
 const FormGroup = styled.div`
   margin-bottom: 1.5rem;
@@ -284,46 +284,46 @@ const SubmitButton = styled(motion.button)`
   }
 `;
 
-const UltraExclusiveInfo = styled.div`
-  background: transparent;
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 
-    0 4px 20px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  
-  &::before {
-    content: '🌟';
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    font-size: 1.5rem;
-    opacity: 0.3;
-  }
-  
-  h4 {
-    color: rgba(255, 255, 255, 0.9);
-    margin: 0 0 0.75rem 0;
-    font-size: 1rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  p {
-    color: rgba(255, 255, 255, 0.7);
-    margin: 0;
-    font-size: 0.875rem;
-    line-height: 1.6;
-  }
-`;
+// const UltraExclusiveInfo = styled.div`
+//   background: transparent;
+//   backdrop-filter: blur(40px);
+//   -webkit-backdrop-filter: blur(40px);
+//   border: 1px solid rgba(255, 255, 255, 0.08);
+//   border-radius: 16px;
+//   padding: 1.5rem;
+//   margin-bottom: 2rem;
+//   position: relative;
+//   overflow: hidden;
+//   box-shadow: 
+//     0 4px 20px rgba(0, 0, 0, 0.1),
+//     inset 0 1px 0 rgba(255, 255, 255, 0.08);
+//   
+//   &::before {
+//     content: '🌟';
+//     position: absolute;
+//     top: 1rem;
+//     right: 1rem;
+//     font-size: 1.5rem;
+//     opacity: 0.3;
+//   }
+//   
+//   h4 {
+//     color: rgba(255, 255, 255, 0.9);
+//     margin: 0 0 0.75rem 0;
+//     font-size: 1rem;
+//     font-weight: 600;
+//     display: flex;
+//     align-items: center;
+//     gap: 0.5rem;
+//   }
+//   
+//   p {
+//     color: rgba(255, 255, 255, 0.7);
+//     margin: 0;
+//     font-size: 0.875rem;
+//     line-height: 1.6;
+//   }
+// `;
 
 
 

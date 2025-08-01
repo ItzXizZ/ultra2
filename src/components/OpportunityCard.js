@@ -502,8 +502,7 @@ const OpportunityCard = ({
     stats,
     progress,
     tags = [],
-    imageUrl,
-    source
+    imageUrl
   } = opportunity;
 
   const [isExpanded, setIsExpanded] = React.useState(false);
