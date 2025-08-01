@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styled from 'styled-components';
-import GlassCard from './components/GlassCard';
 import OpportunityCard from './components/OpportunityCard';
 import UserToggle from './components/UserToggle';
 import ProviderForm from './components/ProviderForm';
