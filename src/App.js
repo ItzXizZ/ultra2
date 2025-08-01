@@ -412,7 +412,6 @@ function App() {
   });
   const [showGlow, setShowGlow] = useState(false);
   const [glowDisabled, setGlowDisabled] = useState(false);
-  const [scrollPosition, setScrollPosition] = useState(0);
   const [isNearTop, setIsNearTop] = useState(true);
   
   const notifications = useNotifications();
@@ -579,7 +578,6 @@ function App() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScroll = window.scrollY;
-      setScrollPosition(currentScroll);
       setIsNearTop(currentScroll < 100); // Adjust threshold as needed
 
       if (currentScroll > 10 && !glowDisabled) {

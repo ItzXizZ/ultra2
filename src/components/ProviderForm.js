@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import styled from 'styled-components';
 
 const FormContainer = styled(motion.div)`
@@ -325,6 +325,21 @@ const UltraExclusiveInfo = styled.div`
   }
 `;
 
+
+
+const SuccessMessage = styled(motion.div)`
+  text-align: center;
+  padding: 2rem;
+  background: rgba(46, 213, 115, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(46, 213, 115, 0.2);
+  border-radius: 12px;
+  color: #2ed573;
+  margin-top: 2rem;
+  box-shadow: 0 0 30px rgba(46, 213, 115, 0.1);
+`;
+
 const FormGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -470,7 +485,6 @@ const ImageRequirements = styled.div`
 `;
 
 const ProviderForm = ({ onSubmit }) => {
-  const [formType, setFormType] = useState('general');
   const [formData, setFormData] = useState({
     title: '',
     company: '',
@@ -482,7 +496,7 @@ const ProviderForm = ({ onSubmit }) => {
     duration: '',
     applicationDeadline: '',
     contactEmail: '',
-    // Ultra Exclusive specific fields
+    // Enhanced optional fields
     maxApplicants: '',
     selectionCriteria: '',
     interviewProcess: '',
@@ -490,6 +504,7 @@ const ProviderForm = ({ onSubmit }) => {
     networkingOpportunities: '',
     image: null
   });
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -568,19 +583,20 @@ const ProviderForm = ({ onSubmit }) => {
       formDataObj.append('file_attachment', formData.image);
     }
     
-    // Add form type
-    formDataObj.append('formType', formType);
+    // Add form type (always general now)
+    formDataObj.append('formType', 'general');
     
     // Call the parent's onSubmit handler
     if (onSubmit) {
-      await onSubmit(formType, formDataObj);
+      await onSubmit('general', formDataObj);
     }
+    
+    // Show success message
+    setIsSubmitted(true);
   };
 
   const isFormValid = () => {
-    const requiredFields = formType === 'ultra' 
-      ? ['title', 'company', 'description', 'requirements', 'contactEmail', 'maxApplicants', 'selectionCriteria']
-      : ['title', 'company', 'description', 'requirements', 'contactEmail'];
+    const requiredFields = ['title', 'company', 'description', 'requirements', 'contactEmail'];
     
     const hasRequiredFields = requiredFields.every(field => formData[field].trim() !== '');
     const hasImage = formData.image && formData.image.size > 0;
@@ -598,47 +614,22 @@ const ProviderForm = ({ onSubmit }) => {
         <FormHeader>
           <FormTitle>Submit Opportunity</FormTitle>
           <FormSubtitle>
-            Share your opportunity with talented high school students. Choose between general posting or our premium Ultra Exclusive service for enhanced curation and support.
+            Share your opportunity with talented high school students. Include optional enhanced details for better visibility.
           </FormSubtitle>
         </FormHeader>
-        
-        <ToggleContainer>
-          <ToggleSlider
-            animate={{ 
-              x: formType === 'general' ? '0%' : 'calc(100% - 0.5rem)'
-            }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 500, 
-              damping: 30 
-            }}
-          />
-          <ToggleOption
-            active={formType === 'general'}
-            onClick={() => setFormType('general')}
-          >
-            General
-          </ToggleOption>
-          <ToggleOption
-            active={formType === 'ultra'}
-            onClick={() => setFormType('ultra')}
-          >
-            Ultra Exclusive
-          </ToggleOption>
-        </ToggleContainer>
 
-        {formType === 'ultra' && (
-          <UltraExclusiveInfo>
-            <h4>🌟 Ultra Exclusive Benefits</h4>
-            <p>
-              Ultra Exclusive opportunities are curated by our moderators and provide enhanced applicant screening, 
-              mentorship programs, and networking opportunities. We'll help you find the most qualified candidates 
-              and facilitate meaningful connections.
-            </p>
-          </UltraExclusiveInfo>
-        )}
-
-        <form onSubmit={handleSubmit}>
+        <AnimatePresence>
+          {isSubmitted ? (
+            <SuccessMessage
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h3>🎉 Opportunity Submitted Successfully!</h3>
+              <p>Thank you for submitting your opportunity. Our team will review it and make it available to students within 24-48 hours.</p>
+            </SuccessMessage>
+          ) : (
+            <form onSubmit={handleSubmit}>
           <FormGrid>
             <FormSection>
               <SectionTitle>Basic Information</SectionTitle>
@@ -814,68 +805,70 @@ const ProviderForm = ({ onSubmit }) => {
             </FormSection>
           </FullWidthSection>
 
-          {formType === 'ultra' && (
-            <FullWidthSection>
-              <FormSection>
-                <SectionTitle>Ultra Exclusive Features</SectionTitle>
-                <FormGrid>
-                  <FormGroup>
-                    <Label>Maximum Applicants *</Label>
-                    <Input
-                      type="number"
-                      name="maxApplicants"
-                      value={formData.maxApplicants}
-                      onChange={handleInputChange}
-                      placeholder="e.g., 10"
-                      min="1"
-                      required
-                    />
-                  </FormGroup>
-
-                  <FormGroup>
-                    <Label>Selection Criteria *</Label>
-                    <TextArea
-                      name="selectionCriteria"
-                      value={formData.selectionCriteria}
-                      onChange={handleInputChange}
-                      placeholder="Describe how you'll evaluate and select applicants..."
-                      required
-                    />
-                  </FormGroup>
-                </FormGrid>
-
+          <FullWidthSection>
+            <FormSection>
+              <SectionTitle>
+                <span style={{ color: 'rgba(255, 215, 0, 0.8)', marginRight: '0.5rem' }}>🌟</span>
+                Enhanced Details (Optional)
+              </SectionTitle>
+              <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.9rem', marginBottom: '2rem' }}>
+                Include these details to make your opportunity more attractive to students
+              </p>
+              <FormGrid>
                 <FormGroup>
-                  <Label>Interview Process</Label>
-                  <TextArea
-                    name="interviewProcess"
-                    value={formData.interviewProcess}
+                  <Label>Maximum Applicants</Label>
+                  <Input
+                    type="number"
+                    name="maxApplicants"
+                    value={formData.maxApplicants}
                     onChange={handleInputChange}
-                    placeholder="Describe your interview process and timeline..."
+                    placeholder="e.g., 10"
+                    min="1"
                   />
                 </FormGroup>
 
                 <FormGroup>
-                  <Label>Mentorship Details</Label>
+                  <Label>Selection Criteria</Label>
                   <TextArea
-                    name="mentorshipDetails"
-                    value={formData.mentorshipDetails}
+                    name="selectionCriteria"
+                    value={formData.selectionCriteria}
                     onChange={handleInputChange}
-                    placeholder="Describe any mentorship, training, or development opportunities..."
+                    placeholder="Describe how you'll evaluate and select applicants..."
                   />
                 </FormGroup>
+              </FormGrid>
 
-                <FormGroup>
-                  <Label>Networking Opportunities</Label>
-                  <TextArea
-                    name="networkingOpportunities"
-                    value={formData.networkingOpportunities}
-                    onChange={handleInputChange}
-                    placeholder="Describe networking events, industry connections, or career development opportunities..."
-                  />
-                </FormGroup>
-              </FormSection>
-            </FullWidthSection>
-          )}
+              <FormGroup>
+                <Label>Interview Process</Label>
+                <TextArea
+                  name="interviewProcess"
+                  value={formData.interviewProcess}
+                  onChange={handleInputChange}
+                  placeholder="Describe your interview process and timeline..."
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Mentorship Details</Label>
+                <TextArea
+                  name="mentorshipDetails"
+                  value={formData.mentorshipDetails}
+                  onChange={handleInputChange}
+                  placeholder="Describe any mentorship, training, or development opportunities..."
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Networking Opportunities</Label>
+                <TextArea
+                  name="networkingOpportunities"
+                  value={formData.networkingOpportunities}
+                  onChange={handleInputChange}
+                  placeholder="Describe networking events, industry connections, or career development opportunities..."
+                />
+              </FormGroup>
+            </FormSection>
+          </FullWidthSection>
 
           <SubmitButton
             type="submit"
@@ -883,9 +876,11 @@ const ProviderForm = ({ onSubmit }) => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            {formType === 'ultra' ? 'Submit Ultra Exclusive Opportunity' : 'Submit General Opportunity'}
+            Submit Opportunity
           </SubmitButton>
-        </form>
+            </form>
+          )}
+        </AnimatePresence>
       </FormCard>
     </FormContainer>
   );

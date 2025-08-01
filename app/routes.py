@@ -102,62 +102,7 @@ def admin_dashboard():
                          total_count=total_count,
                          recent_submissions=recent_submissions)
 
-# --- Ultra Exclusive Submission ---
-@bp.route('/submit/ultra', methods=['GET', 'POST'])
-def submit_ultra():
-    if request.method == 'POST':
-        # Handle file upload
-        file_attachment = None
-        if 'file_attachment' in request.files:
-            file = request.files['file_attachment']
-            if file and file.filename:
-                filename = secure_filename(file.filename)
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                filename = f"{timestamp}_{filename}"
-                file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-                file_attachment = filename
-        
-        # Create submission with all form fields
-        submission = OpportunitySubmission(
-            source='ultra',
-            title=request.form['title'],
-            description=request.form['description'],
-            company=request.form['company'],
-            location=request.form.get('location'),
-            type=request.form.get('type'),
-            application_deadline=request.form.get('application_deadline'),
-            gpa_requirement=request.form.get('gpa_requirement'),
-            skills=request.form.get('skills'),
-            grade_levels=request.form.get('grade_levels'),
-            compensation=request.form.get('compensation'),
-            file_attachment=file_attachment,
-            priority=True,
-            badge='Ultra Exclusive',
-            
-            # Submitter information fields
-            submitter_role=request.form.get('submitter_role'),
-            submitter_name=request.form.get('submitter_name'),
-            submitter_email=request.form.get('submitter_email'),
-            submitter_phone=request.form.get('submitter_phone'),
-            
-            # Company information fields
-            company_website=request.form.get('company_website'),
-            company_size=request.form.get('company_size'),
-            industry=request.form.get('industry'),
-            company_location=request.form.get('company_location'),
-            
-            # Application information fields
-            application_link=request.form.get('application_link'),
-            application_method=request.form.get('application_method'),
-            application_instructions=request.form.get('application_instructions')
-        )
-        
-        db.session.add(submission)
-        db.session.commit()
-        flash('Ultra Exclusive opportunity submitted successfully!')
-        return redirect(url_for('main.submit_ultra'))
-    
-    return render_template('submit_ultra.html')
+
 
 # --- General Submission ---
 @bp.route('/submit/general', methods=['GET', 'POST'])
@@ -174,7 +119,7 @@ def submit_general():
                 file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
                 file_attachment = filename
         
-        # Create submission
+        # Create submission with all optional fields
         submission = OpportunitySubmission(
             source='general',
             title=request.form['title'],
@@ -189,7 +134,7 @@ def submit_general():
             compensation=request.form.get('compensation'),
             file_attachment=file_attachment,
             priority=False,
-            badge='General',
+            badge='Opportunity',
             
             # Submitter information fields
             submitter_role=request.form.get('submitter_role'),
@@ -211,7 +156,7 @@ def submit_general():
         
         db.session.add(submission)
         db.session.commit()
-        flash('General opportunity submitted successfully!')
+        flash('Opportunity submitted successfully! Our team will review it and make it available to students within 24-48 hours.')
         return redirect(url_for('main.submit_general'))
     
     return render_template('submit_general.html')

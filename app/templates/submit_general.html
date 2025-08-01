@@ -99,27 +99,101 @@
             content: " *";
             color: #dc3545;
         }
+        
+        /* Success Message Overlay */
+        .success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .success-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .success-message {
+            background: linear-gradient(135deg, rgba(30, 30, 30, 0.95) 0%, rgba(20, 20, 20, 0.98) 100%);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            transform: scale(0.8);
+            transition: transform 0.5s ease;
+        }
+        
+        .success-overlay.show .success-message {
+            transform: scale(1);
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            color: #2ed573;
+            margin-bottom: 1rem;
+        }
+        
+        .success-title {
+            color: #2ed573;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .success-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        /* Optional Fields Section */
+        .optional-section {
+            border-left: 3px solid rgba(255, 215, 0, 0.5);
+            padding-left: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .optional-label {
+            color: rgba(255, 215, 0, 0.8) !important;
+            font-size: 0.75rem !important;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 <body>
     <!-- Navigation Buttons -->
     <div class="nav-buttons">
         <a href="/" class="btn btn-outline-light btn-sm">Home</a>
-        <a href="/submit/ultra" class="btn btn-outline-light btn-sm">Ultra</a>
-        <a href="/submit/general" class="btn btn-outline-light btn-sm">General</a>
+        <a href="/submit/general" class="btn btn-outline-light btn-sm">Submit</a>
         <a href="/login" class="btn btn-outline-light btn-sm">Login</a>
     </div>
 
     <div class="container py-5">
         <!-- Hero Section -->
         <div class="hero-section text-center">
-            <h2 class="fw-light">General Opportunity Submission</h2>
-            <p class="text-muted">Simple and accessible submissions for community participation</p>
+            <h2 class="fw-light">Submit Opportunity</h2>
+            <p class="text-muted">Share your opportunity with talented high school students. Include optional enhanced details for better visibility.</p>
         </div>
 
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <form method="post">
+                <form method="post" enctype="multipart/form-data">
                     <!-- Submitter Information -->
                     <div class="form-section">
                         <h5 class="mb-4">Submitter Information</h5>
@@ -188,22 +262,63 @@
                         </div>
                     </div>
 
-                    <!-- Additional Information -->
+                    <!-- Location & Type -->
                     <div class="form-section">
-                        <h5 class="mb-4">Additional Information</h5>
+                        <h5 class="mb-4">Location & Type</h5>
                         <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Location</label>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Opportunity Location</label>
                                 <input type="text" class="form-control" name="location" placeholder="City, State or Remote">
                             </div>
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label class="form-label">Type</label>
                                 <input type="text" class="form-control" name="type" placeholder="Internship, Job, Program, etc.">
                             </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Application Deadline</label>
+                            <input type="text" class="form-control" name="application_deadline" placeholder="MM/DD/YYYY">
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Details (Optional) -->
+                    <div class="form-section optional-section">
+                        <h5 class="mb-4">
+                            <i class="fas fa-star" style="color: rgba(255, 215, 0, 0.8); margin-right: 0.5rem;"></i>
+                            Enhanced Details (Optional)
+                        </h5>
+                        <p class="text-muted mb-4" style="font-size: 0.9rem;">Include these details to make your opportunity more attractive to students</p>
+                        
+                        <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Application Deadline</label>
-                                <input type="text" class="form-control" name="application_deadline" placeholder="MM/DD/YYYY">
+                                <label class="form-label optional-label">GPA Requirement</label>
+                                <input type="text" class="form-control" name="gpa_requirement" placeholder="e.g., 3.0+">
                             </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label optional-label">Grade Levels</label>
+                                <input type="text" class="form-control" name="grade_levels" placeholder="e.g., Sophomore, Junior, Senior">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label optional-label">Compensation</label>
+                                <input type="text" class="form-control" name="compensation" placeholder="e.g., $25/hour, $5000 stipend">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label optional-label">Skills</label>
+                            <input type="text" class="form-control" name="skills" placeholder="e.g., Python, JavaScript, Leadership">
+                        </div>
+                    </div>
+
+                    <!-- File Attachment (Optional) -->
+                    <div class="form-section optional-section">
+                        <h5 class="mb-4">
+                            <i class="fas fa-paperclip" style="color: rgba(255, 215, 0, 0.8); margin-right: 0.5rem;"></i>
+                            File Attachment (Optional)
+                        </h5>
+                        <div class="mb-3">
+                            <label class="form-label optional-label">File Attachment</label>
+                            <input type="file" class="form-control" name="file_attachment">
+                            <small class="text-muted">Upload additional documents (PDF, DOC, etc.)</small>
                         </div>
                     </div>
 
@@ -236,7 +351,7 @@
 
                     <!-- Submit Button -->
                     <div class="text-center">
-                        <button type="submit" class="btn btn-success btn-lg">Submit General Opportunity</button>
+                        <button type="submit" class="btn btn-success btn-lg">Submit Opportunity</button>
                     </div>
                 </form>
 
@@ -250,10 +365,54 @@
                 <!-- Navigation -->
                 <div class="text-center mt-4">
                     <a href="/" class="btn btn-outline-light">Back to Home</a>
-                    <a href="/submit/ultra" class="btn btn-outline-light">Upgrade to Ultra Exclusive</a>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Success Message Overlay -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-message">
+            <div class="success-icon">🎉</div>
+            <div class="success-title">Opportunity Submitted Successfully!</div>
+            <div class="success-text">
+                Thank you for submitting your opportunity. Our team will review it and make it available to students within 24-48 hours.
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script>
+        // Handle form submission with success overlay
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const successOverlay = document.getElementById('successOverlay');
+            
+            // Check if there's a flash message (indicating successful submission)
+            const flashMessage = document.querySelector('.alert-success');
+            if (flashMessage) {
+                // Show success overlay
+                successOverlay.classList.add('show');
+                
+                // Hide overlay after 5 seconds
+                setTimeout(function() {
+                    successOverlay.classList.remove('show');
+                }, 5000);
+            }
+            
+            form.addEventListener('submit', function(e) {
+                // Show loading state
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+                submitBtn.disabled = true;
+                
+                // Let the form submit normally
+                // The success overlay will be shown when the page reloads with flash message
+            });
+        });
+    </script>
 </body>
 </html> 

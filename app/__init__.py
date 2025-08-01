@@ -19,9 +19,17 @@ def create_app():
     # Configuration
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     
-    # Database configuration - SQLite with persistent disk
-    # On Render, the instance folder is mounted to persistent disk
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///opportunities.db'
+    # Database configuration - SQLite with fallback for local development
+    database_url = os.environ.get('DATABASE_URL')
+    if database_url:
+        # Production: Use the provided database URL (persistent disk on Render)
+        app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+        print("Using production database configuration")
+    else:
+        # Local development: Use local SQLite file
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///opportunities.db'
+        print("Using local development database")
+    
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size

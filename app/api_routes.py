@@ -54,56 +54,7 @@ def api_logout():
     return jsonify({'success': True, 'message': 'Logged out successfully'})
 
 # Submission endpoints
-@api_bp.route('/submit/ultra', methods=['POST'])
-@rate_limit(max_submissions=3, window_minutes=10)  # 3 submissions per 10 minutes
-def submit_ultra():
-    try:
-        # Handle file upload
-        file_attachment = None
-        if 'file_attachment' in request.files:
-            file_attachment = save_file(request.files['file_attachment'])
-        
-        # Create submission
-        submission = OpportunitySubmission(
-            source='ultra',
-            title=request.form['title'],
-            description=request.form['description'],
-            company=request.form['company'],
-            location=request.form.get('location'),
-            type=request.form.get('type'),
-            application_deadline=request.form.get('application_deadline'),
-            gpa_requirement=request.form.get('gpa_requirement'),
-            skills=request.form.get('skills'),
-            grade_levels=request.form.get('grade_levels'),
-            compensation=request.form.get('compensation'),
-            file_attachment=file_attachment,
-            priority=True,
-            badge='Ultra Exclusive',
-            submitter_role=request.form.get('submitter_role'),
-            submitter_name=request.form.get('submitter_name'),
-            submitter_email=request.form.get('submitter_email'),
-            submitter_phone=request.form.get('submitter_phone'),
-            company_website=request.form.get('company_website'),
-            company_size=request.form.get('company_size'),
-            industry=request.form.get('industry'),
-            company_location=request.form.get('company_location'),
-            application_link=request.form.get('application_link'),
-            application_method=request.form.get('application_method'),
-            application_instructions=request.form.get('application_instructions')
-        )
-        
-        db.session.add(submission)
-        db.session.commit()
-        
-        return jsonify({
-            'success': True,
-            'message': 'Ultra Exclusive opportunity submitted successfully!',
-            'submission_id': submission.id
-        })
-        
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 500
+
 
 @api_bp.route('/submit/general', methods=['POST'])
 @rate_limit(max_submissions=5, window_minutes=10)  # 5 submissions per 10 minutes
@@ -114,7 +65,7 @@ def submit_general():
         if 'file_attachment' in request.files:
             file_attachment = save_file(request.files['file_attachment'])
         
-        # Create submission
+        # Create submission with all optional fields
         submission = OpportunitySubmission(
             source='general',
             title=request.form['title'],
@@ -129,7 +80,7 @@ def submit_general():
             compensation=request.form.get('compensation'),
             file_attachment=file_attachment,
             priority=False,
-            badge='General',
+            badge='Opportunity',
             submitter_role=request.form.get('submitter_role'),
             submitter_name=request.form.get('submitter_name'),
             submitter_email=request.form.get('submitter_email'),
@@ -148,7 +99,7 @@ def submit_general():
         
         return jsonify({
             'success': True,
-            'message': 'General opportunity submitted successfully!',
+            'message': 'Opportunity submitted successfully! Our team will review it and make it available to students within 24-48 hours.',
             'submission_id': submission.id
         })
         
@@ -197,6 +148,54 @@ def submit_funding():
         return jsonify({
             'success': True,
             'message': 'Funding opportunity submitted successfully!',
+            'submission_id': submission.id
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@api_bp.route('/submit/founder', methods=['POST'])
+@rate_limit(max_submissions=3, window_minutes=10)  # 3 submissions per 10 minutes
+def submit_founder():
+    try:
+        # Handle file upload
+        file_attachment = None
+        if 'file_attachment' in request.files:
+            file_attachment = save_file(request.files['file_attachment'])
+        
+        # Create submission with source='founder' so it only shows on investor page
+        submission = OpportunitySubmission(
+            source='founder',
+            title=request.form['title'],
+            description=request.form['description'],
+            company=request.form['company'],
+            location=request.form.get('location', 'Remote'),
+            type='Investment',
+            application_deadline=request.form.get('application_deadline', 'No deadline'),
+            compensation=request.form.get('funding_amount'),
+            file_attachment=file_attachment,
+            priority=True,
+            badge='Investment Opportunity',
+            submitter_role=request.form.get('submitter_role', 'founder'),
+            submitter_name=request.form.get('submitter_name'),
+            submitter_email=request.form.get('submitter_email'),
+            submitter_phone=request.form.get('submitter_phone'),
+            company_website=request.form.get('company_website'),
+            company_size=request.form.get('company_size'),
+            industry=request.form.get('industry'),
+            company_location=request.form.get('company_location'),
+            application_link=request.form.get('application_link'),
+            application_method=request.form.get('application_method'),
+            application_instructions=request.form.get('application_instructions')
+        )
+        
+        db.session.add(submission)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Investment opportunity submitted successfully!',
             'submission_id': submission.id
         })
         
@@ -462,7 +461,6 @@ def get_admin_stats():
     total_count = OpportunitySubmission.query.count()
     
     # Get counts by source
-    ultra_count = OpportunitySubmission.query.filter_by(source='ultra').count()
     general_count = OpportunitySubmission.query.filter_by(source='general').count()
     funding_count = OpportunitySubmission.query.filter_by(source='funding').count()
     job_count = OpportunitySubmission.query.filter_by(source='job').count()
@@ -482,7 +480,6 @@ def get_admin_stats():
             'approved': approved_count,
             'rejected': rejected_count,
             'by_source': {
-                'ultra': ultra_count,
                 'general': general_count,
                 'funding': funding_count,
                 'job': job_count
