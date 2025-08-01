@@ -390,6 +390,17 @@ const CheckboxLabel = styled.label`
   }
 `;
 
+// Helper function to get the correct base URL for images
+const getImageBaseUrl = () => {
+  // In production, both React and Flask are served from the same domain
+  // In development, Flask runs on localhost:5000
+  if (process.env.NODE_ENV === 'production') {
+    // Use the current origin (protocol + hostname + port) for production
+    return window.location.origin;
+  }
+  return 'http://localhost:5000';
+};
+
 function App() {
   const [currentUserType, setCurrentUserType] = useState(0);
   const [showProviderForm, setShowProviderForm] = useState(false);
@@ -634,7 +645,7 @@ function App() {
         tags: opp.skills ? opp.skills.split(',').map(s => s.trim()) : [],
         category: opp.type || 'General',
         type: opp.source === 'ultra' ? 'Ultra Exclusive' : opp.source === 'job' ? 'Job' : 'General',
-        imageUrl: opp.file_attachment ? `${process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000'}/uploads/${opp.file_attachment}` : null, // Use uploaded file if available
+        imageUrl: opp.file_attachment ? `${getImageBaseUrl()}/uploads/${opp.file_attachment}` : null,
         badge: opp.badge,
         priority: opp.priority,
         application_link: opp.application_link
@@ -662,7 +673,7 @@ function App() {
           tags: opp.skills ? opp.skills.split(',').map(s => s.trim()) : [],
           category: opp.type || 'Funding',
           type: opp.source === 'funding' ? 'Funding' : 'General',
-          imageUrl: opp.file_attachment ? `${process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000'}/uploads/${opp.file_attachment}` : null, // Use uploaded file if available
+          imageUrl: opp.file_attachment ? `${getImageBaseUrl()}/uploads/${opp.file_attachment}` : null,
           badge: opp.badge,
           priority: opp.priority,
           application_link: opp.application_link
@@ -682,7 +693,7 @@ function App() {
             tags: opp.skills ? opp.skills.split(',').map(s => s.trim()) : [],
             category: opp.type || 'Investment',
             type: 'Investment',
-            imageUrl: opp.file_attachment ? `${process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000'}/uploads/${opp.file_attachment}` : null,
+            imageUrl: opp.file_attachment ? `${getImageBaseUrl()}/uploads/${opp.file_attachment}` : null,
             badge: opp.badge,
             priority: opp.priority,
             application_link: opp.application_link
