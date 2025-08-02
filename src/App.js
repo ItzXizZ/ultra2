@@ -390,15 +390,20 @@ const CheckboxLabel = styled.label`
   }
 `;
 
-// Helper function to get the correct base URL for images
-const getImageBaseUrl = () => {
-  // In production, both React and Flask are served from the same domain
-  // In development, Flask runs on localhost:5000
-  if (process.env.NODE_ENV === 'production') {
-    // Use the current origin (protocol + hostname + port) for production
-    return window.location.origin;
+// Helper function to get the correct image URL
+const getImageUrl = (fileAttachment) => {
+  if (!fileAttachment) return null;
+  
+  // If it's already a full URL (cloud storage), return as is
+  if (fileAttachment.startsWith('http://') || fileAttachment.startsWith('https://')) {
+    return fileAttachment;
   }
-  return 'http://localhost:5000';
+  
+  // If it's a filename (local storage), construct the full URL
+  if (process.env.NODE_ENV === 'production') {
+    return `${window.location.origin}/uploads/${fileAttachment}`;
+  }
+  return `http://localhost:5000/uploads/${fileAttachment}`;
 };
 
 function App() {
@@ -645,7 +650,7 @@ function App() {
         tags: opp.skills ? opp.skills.split(',').map(s => s.trim()) : [],
         category: opp.type || 'General',
         type: opp.source === 'ultra' ? 'Ultra Exclusive' : opp.source === 'job' ? 'Job' : 'General',
-        imageUrl: opp.file_attachment ? `${getImageBaseUrl()}/uploads/${opp.file_attachment}` : null,
+        imageUrl: getImageUrl(opp.file_attachment),
         badge: opp.badge,
         priority: opp.priority,
         application_link: opp.application_link
@@ -673,7 +678,7 @@ function App() {
           tags: opp.skills ? opp.skills.split(',').map(s => s.trim()) : [],
           category: opp.type || 'Funding',
           type: opp.source === 'funding' ? 'Funding' : 'General',
-          imageUrl: opp.file_attachment ? `${getImageBaseUrl()}/uploads/${opp.file_attachment}` : null,
+          imageUrl: getImageUrl(opp.file_attachment),
           badge: opp.badge,
           priority: opp.priority,
           application_link: opp.application_link
@@ -693,7 +698,7 @@ function App() {
             tags: opp.skills ? opp.skills.split(',').map(s => s.trim()) : [],
             category: opp.type || 'Investment',
             type: 'Investment',
-            imageUrl: opp.file_attachment ? `${getImageBaseUrl()}/uploads/${opp.file_attachment}` : null,
+            imageUrl: getImageUrl(opp.file_attachment),
             badge: opp.badge,
             priority: opp.priority,
             application_link: opp.application_link

@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 from . import db, login_manager
 from .models import User, OpportunitySubmission
+from .cloud_storage import cloud_storage
 
 bp = Blueprint('main', __name__)
 
@@ -113,11 +114,17 @@ def submit_general():
         if 'file_attachment' in request.files:
             file = request.files['file_attachment']
             if file and file.filename:
-                filename = secure_filename(file.filename)
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                filename = f"{timestamp}_{filename}"
-                file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-                file_attachment = filename
+                # Upload to cloud storage
+                cloud_url = cloud_storage.upload_image(file)
+                if cloud_url:
+                    file_attachment = cloud_url
+                else:
+                    # Fallback to local storage if cloud upload fails
+                    filename = secure_filename(file.filename)
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    filename = f"{timestamp}_{filename}"
+                    file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                    file_attachment = filename
         
         # Create submission with all optional fields
         submission = OpportunitySubmission(
@@ -170,11 +177,17 @@ def submit_funding():
         if 'file_attachment' in request.files:
             file = request.files['file_attachment']
             if file and file.filename:
-                filename = secure_filename(file.filename)
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                filename = f"{timestamp}_{filename}"
-                file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-                file_attachment = filename
+                # Upload to cloud storage
+                cloud_url = cloud_storage.upload_image(file)
+                if cloud_url:
+                    file_attachment = cloud_url
+                else:
+                    # Fallback to local storage if cloud upload fails
+                    filename = secure_filename(file.filename)
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    filename = f"{timestamp}_{filename}"
+                    file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                    file_attachment = filename
         
         # Create submission
         submission = OpportunitySubmission(
@@ -224,11 +237,17 @@ def submit_job():
         if 'file_attachment' in request.files:
             file = request.files['file_attachment']
             if file and file.filename:
-                filename = secure_filename(file.filename)
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                filename = f"{timestamp}_{filename}"
-                file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-                file_attachment = filename
+                # Upload to cloud storage
+                cloud_url = cloud_storage.upload_image(file)
+                if cloud_url:
+                    file_attachment = cloud_url
+                else:
+                    # Fallback to local storage if cloud upload fails
+                    filename = secure_filename(file.filename)
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    filename = f"{timestamp}_{filename}"
+                    file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                    file_attachment = filename
         
         # Create submission
         submission = OpportunitySubmission(
