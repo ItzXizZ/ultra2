@@ -8,10 +8,15 @@ class ApiService {
     // Generic request method
     async request(endpoint, options = {}) {
         const url = `${this.baseURL}${endpoint}`;
+        
+        // Get token from localStorage
+        const token = localStorage.getItem('adminToken');
+        
         const config = {
             credentials: 'include', // Include cookies for session authentication
             headers: {
                 'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` }),
                 ...options.headers,
             },
             ...options,
