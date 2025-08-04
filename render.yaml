@@ -1,20 +1,22 @@
 services:
   - type: web
     name: ultra-opportunity-portal
-    env: python
+    env: node
     plan: starter
     buildCommand: |
-      chmod +x build.sh
-      ./build.sh
-    startCommand: gunicorn --config gunicorn.conf.py run:app
+      npm run install:all
+      npm run build:all
+    startCommand: npm run backend:start
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
       - key: NODE_VERSION
         value: 18.0.0
-      - key: SECRET_KEY
+      - key: JWT_SECRET
         generateValue: true
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
     disk:
       name: ultra-portal-data
-      mountPath: /opt/render/project/src/instance
+      mountPath: /opt/render/project/src/backend/data
       sizeGB: 1 

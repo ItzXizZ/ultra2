@@ -390,6 +390,22 @@ const CheckboxLabel = styled.label`
   }
 `;
 
+// Helper function to get the correct image URL
+const getImageUrl = (fileAttachment) => {
+  if (!fileAttachment) return null;
+  
+  // If it's already a full URL (cloud storage), return as is
+  if (fileAttachment.startsWith('http://') || fileAttachment.startsWith('https://')) {
+    return fileAttachment;
+  }
+  
+  // If it's a filename (local storage), construct the full URL
+  if (process.env.NODE_ENV === 'production') {
+    return `${window.location.origin}/uploads/${fileAttachment}`;
+  }
+  return `http://localhost:5000/uploads/${fileAttachment}`;
+};
+
 function App() {
   const [currentUserType, setCurrentUserType] = useState(0);
   const [showProviderForm, setShowProviderForm] = useState(false);
@@ -412,7 +428,6 @@ function App() {
   });
   const [showGlow, setShowGlow] = useState(false);
   const [glowDisabled, setGlowDisabled] = useState(false);
-  const [scrollPosition, setScrollPosition] = useState(0);
   const [isNearTop, setIsNearTop] = useState(true);
   
   const notifications = useNotifications();
@@ -579,7 +594,6 @@ function App() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScroll = window.scrollY;
-      setScrollPosition(currentScroll);
       setIsNearTop(currentScroll < 100); // Adjust threshold as needed
 
       if (currentScroll > 10 && !glowDisabled) {
@@ -636,7 +650,7 @@ function App() {
         tags: opp.skills ? opp.skills.split(',').map(s => s.trim()) : [],
         category: opp.type || 'General',
         type: opp.source === 'ultra' ? 'Ultra Exclusive' : opp.source === 'job' ? 'Job' : 'General',
-        imageUrl: opp.file_attachment ? `${process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000'}/uploads/${opp.file_attachment}` : null, // Use uploaded file if available
+        imageUrl: getImageUrl(opp.file_attachment),
         badge: opp.badge,
         priority: opp.priority,
         application_link: opp.application_link
@@ -664,7 +678,7 @@ function App() {
           tags: opp.skills ? opp.skills.split(',').map(s => s.trim()) : [],
           category: opp.type || 'Funding',
           type: opp.source === 'funding' ? 'Funding' : 'General',
-          imageUrl: opp.file_attachment ? `${process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000'}/uploads/${opp.file_attachment}` : null, // Use uploaded file if available
+          imageUrl: getImageUrl(opp.file_attachment),
           badge: opp.badge,
           priority: opp.priority,
           application_link: opp.application_link
@@ -684,7 +698,7 @@ function App() {
             tags: opp.skills ? opp.skills.split(',').map(s => s.trim()) : [],
             category: opp.type || 'Investment',
             type: 'Investment',
-            imageUrl: opp.file_attachment ? `${process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000'}/uploads/${opp.file_attachment}` : null,
+            imageUrl: getImageUrl(opp.file_attachment),
             badge: opp.badge,
             priority: opp.priority,
             application_link: opp.application_link

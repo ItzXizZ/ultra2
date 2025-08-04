@@ -8,10 +8,15 @@ class ApiService {
     // Generic request method
     async request(endpoint, options = {}) {
         const url = `${this.baseURL}${endpoint}`;
+        
+        // Get token from localStorage
+        const token = localStorage.getItem('adminToken');
+        
         const config = {
             credentials: 'include', // Include cookies for session authentication
             headers: {
                 'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` }),
                 ...options.headers,
             },
             ...options,
@@ -56,25 +61,6 @@ class ApiService {
     }
 
     // Form submissions
-    async submitUltra(formData) {
-        const url = `${this.baseURL}/submit/ultra`;
-        const response = await fetch(url, {
-            method: 'POST',
-            credentials: 'include', // Include cookies for session authentication
-            body: formData, // FormData for file uploads
-        });
-        
-        if (!response.ok) {
-            const error = await response.json();
-            // Handle rate limiting specifically
-            if (response.status === 429) {
-                throw new Error(error.message || 'Rate limit exceeded. Please wait before submitting again.');
-            }
-            throw new Error(error.message || 'Submission failed');
-        }
-        
-        return response.json();
-    }
 
     async submitGeneral(formData) {
         const url = `${this.baseURL}/submit/general`;
@@ -98,6 +84,26 @@ class ApiService {
 
     async submitFunding(formData) {
         const url = `${this.baseURL}/submit/funding`;
+        const response = await fetch(url, {
+            method: 'POST',
+            credentials: 'include', // Include cookies for session authentication
+            body: formData,
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            // Handle rate limiting specifically
+            if (response.status === 429) {
+                throw new Error(error.message || 'Rate limit exceeded. Please wait before submitting again.');
+            }
+            throw new Error(error.message || 'Submission failed');
+        }
+        
+        return response.json();
+    }
+
+    async submitFounder(formData) {
+        const url = `${this.baseURL}/submit/founder`;
         const response = await fetch(url, {
             method: 'POST',
             credentials: 'include', // Include cookies for session authentication

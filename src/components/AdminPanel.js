@@ -58,7 +58,7 @@ const AdminPanel = ({ onClose }) => {
     useEffect(() => {
         // Check if user is already logged in
         const token = localStorage.getItem('adminToken');
-        if (token) {
+        if (token && token !== 'logged-in') {
             setIsLoggedIn(true);
             loadData();
         }
@@ -71,7 +71,7 @@ const AdminPanel = ({ onClose }) => {
             const response = await apiService.login(loginForm.username, loginForm.password);
             setIsLoggedIn(true);
             setUser(response.user);
-            localStorage.setItem('adminToken', 'logged-in');
+            localStorage.setItem('adminToken', response.token);
             loadData();
         } catch (error) {
             notifications.showError('Login Failed', error.message);

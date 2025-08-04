@@ -64,21 +64,7 @@ const SpotlightTag = styled(motion.div)`
   box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
 `;
 
-const UltraExclusiveTag = styled(motion.div)`
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: linear-gradient(135deg, rgba(138, 43, 226, 0.95) 0%, rgba(75, 0, 130, 0.9) 100%);
-  color: #ffffff;
-  padding: 0.375rem 0.875rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  z-index: 2;
-  box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
-`;
+
 
 const CardHeader = styled.div`
   display: flex;
@@ -185,8 +171,8 @@ const ActionButtonGroup = styled.div`
 const CardStats = styled.div`
   font-size: 1.125rem;
   font-weight: 600;
-  color: ${props => props.type === 'invest' ? '#FFFFFF' : 'rgba(255, 215, 0, 0.9)'};
-  text-shadow: ${props => props.type === 'invest' 
+  color: ${props => props.$type === 'invest' ? '#FFFFFF' : 'rgba(255, 215, 0, 0.9)'};
+  text-shadow: ${props => props.$type === 'invest' 
     ? '0 0 3px rgba(255, 215, 0, 0.3), 0 0 6px rgba(255, 215, 0, 0.2)' 
     : 'none'};
 `;
@@ -198,14 +184,14 @@ const Tag = styled(motion.span)`
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  background: ${props => props.type === 'invest' 
+  background: ${props => props.$type === 'invest' 
     ? 'rgba(255, 255, 255, 0.1)' 
     : 'rgba(255, 215, 0, 0.15)'};
-  color: ${props => props.type === 'invest' ? '#FFFFFF' : 'rgba(255, 215, 0, 0.9)'};
-  border: 1px solid ${props => props.type === 'invest' 
+  color: ${props => props.$type === 'invest' ? '#FFFFFF' : 'rgba(255, 215, 0, 0.9)'};
+  border: 1px solid ${props => props.$type === 'invest' 
     ? 'rgba(255, 215, 0, 0.2)' 
     : 'rgba(255, 215, 0, 0.3)'};
-  text-shadow: ${props => props.type === 'invest' 
+  text-shadow: ${props => props.$type === 'invest' 
     ? '0 0 2px rgba(255, 215, 0, 0.3), 0 0 4px rgba(255, 215, 0, 0.2)' 
     : 'none'};
   backdrop-filter: blur(10px);
@@ -248,29 +234,29 @@ const ActionButton = styled(motion.button)`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: ${props => props.type === 'invest' 
+  background: ${props => props.$type === 'invest' 
     ? 'rgba(255, 255, 255, 0.1)' 
     : 'linear-gradient(135deg, rgba(255, 215, 0, 0.9) 0%, rgba(255, 165, 0, 0.8) 100%)'};
-  color: ${props => props.type === 'invest' ? '#FFFFFF' : '#000000'};
-  text-shadow: ${props => props.type === 'invest' 
+  color: ${props => props.$type === 'invest' ? '#FFFFFF' : '#000000'};
+  text-shadow: ${props => props.$type === 'invest' 
     ? '0 0 2px rgba(255, 215, 0, 0.3), 0 0 4px rgba(255, 215, 0, 0.2)' 
     : 'none'};
-  border: ${props => props.type === 'invest' 
+  border: ${props => props.$type === 'invest' 
     ? '1px solid rgba(255, 215, 0, 0.2)' 
     : '1px solid rgba(255, 215, 0, 0.3)'};
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  box-shadow: ${props => props.type === 'invest' 
+  box-shadow: ${props => props.$type === 'invest' 
     ? '0 4px 15px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)' 
     : '0 4px 15px rgba(255, 215, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1)'};
   
   &:hover {
     transform: translateY(-2px);
-    background: ${props => props.type === 'invest' 
+    background: ${props => props.$type === 'invest' 
       ? 'rgba(255, 255, 255, 0.15)' 
       : 'linear-gradient(135deg, rgba(255, 215, 0, 1) 0%, rgba(255, 165, 0, 0.9) 100%)'};
-    box-shadow: ${props => props.type === 'invest' 
+    box-shadow: ${props => props.$type === 'invest' 
       ? '0 8px 25px rgba(255, 215, 0, 0.2), 0 0 15px rgba(255, 215, 0, 0.1)' 
       : '0 8px 25px rgba(255, 215, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.15)'};
   }
@@ -293,11 +279,11 @@ const ProgressBar = styled.div`
 
 const ProgressFill = styled(motion.div)`
   height: 100%;
-  background: ${props => props.type === 'invest' 
+  background: ${props => props.$type === 'invest' 
     ? 'linear-gradient(90deg, rgba(255, 215, 0, 0.8) 0%, rgba(255, 165, 0, 0.6) 100%)' 
     : 'linear-gradient(90deg, rgba(255, 215, 0, 0.8) 0%, rgba(255, 165, 0, 0.6) 100%)'};
   border-radius: 4px;
-  box-shadow: ${props => props.type === 'invest' 
+  box-shadow: ${props => props.$type === 'invest' 
     ? '0 0 3px rgba(255, 215, 0, 0.3), 0 0 6px rgba(255, 215, 0, 0.2)' 
     : '0 0 3px rgba(255, 215, 0, 0.3), 0 0 6px rgba(255, 215, 0, 0.2)'};
 `;
@@ -516,13 +502,11 @@ const OpportunityCard = ({
     stats,
     progress,
     tags = [],
-    imageUrl,
-    source
+    imageUrl
   } = opportunity;
 
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [showModal, setShowModal] = React.useState(false);
-  const isUltraExclusive = source === 'ultra';
 
 
 
@@ -587,15 +571,7 @@ const OpportunityCard = ({
               ☆ SPOTLIGHT
             </SpotlightTag>
           )}
-          {isUltraExclusive && (
-            <UltraExclusiveTag
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: delay * 0.1 + 0.2 }}
-            >
-              ⭐ ULTRA EXCLUSIVE
-            </UltraExclusiveTag>
-          )}
+
         </CardImage>
 
         <CardHeader>
@@ -650,7 +626,7 @@ const OpportunityCard = ({
             <ProgressText>{progress}% funded</ProgressText>
             <ProgressBar>
               <ProgressFill
-                type={type}
+                $type={type}
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
                 transition={{ delay: delay * 0.1 + 0.4, duration: 1 }}
@@ -660,10 +636,10 @@ const OpportunityCard = ({
         )}
 
         <CardActions>
-          <CardStats type={type}>{stats}</CardStats>
+          <CardStats $type={type}>{stats}</CardStats>
           <ActionButtonGroup>
             <ActionButton
-              type={type}
+              $type={type}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -700,15 +676,7 @@ const OpportunityCard = ({
                 NO IMAGE PROVIDED
               </NoImageText>
             )}
-            {isUltraExclusive && (
-              <UltraExclusiveTag
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                ⭐ ULTRA EXCLUSIVE
-              </UltraExclusiveTag>
-            )}
+
             {type === 'invest' && progress && progress > 70 && (
               <SpotlightTag
                 initial={{ scale: 0 }}
@@ -724,7 +692,7 @@ const OpportunityCard = ({
             <ModalInfo>
               <ModalTitle>{title}</ModalTitle>
               <ModalCompany>{company}</ModalCompany>
-              <Tag type={type}>
+              <Tag $type={type}>
                 {type === 'invest' ? 'Investment Opportunity' : 'Job Opportunity'}
               </Tag>
             </ModalInfo>
@@ -770,7 +738,7 @@ const OpportunityCard = ({
               <ProgressText>{progress}% funded</ProgressText>
               <ProgressBar>
                 <ProgressFill
-                  type={type}
+                  $type={type}
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
                   transition={{ delay: 0.4, duration: 1 }}
